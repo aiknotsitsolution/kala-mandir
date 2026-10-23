@@ -1,9 +1,9 @@
-import ClassesSection from "@/components/ClassesSection";
+import AcademyLanding from "@/components/AcademyLanding";
 
 export default function Art() {
     return (
         <main id="main">
-            <ClassesSection artOnly showArtDetail={false} />
+            <AcademyLanding academy="art" />
         </main>
     );
 }
