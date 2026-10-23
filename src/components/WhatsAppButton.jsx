@@ -47,9 +47,7 @@ export default function WhatsAppButton() {
                     >
                         <WhatsAppIcon className="h-5 w-5" />
                     </span>
-                    <span className="hidden text-[14px] font-medium sm:inline">
-                        WhatsApp us
-                    </span>
+                    
                 </motion.a>
             )}
         </AnimatePresence>

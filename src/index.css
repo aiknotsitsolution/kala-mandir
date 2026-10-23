@@ -210,42 +210,46 @@
     transform: scaleX(0.15);
   }
 
-  /* Minimal editorial form fields — bottom rule, no boxes */
+  /* Quiet, clearly bounded form fields with a brand-colour focus state. */
   .field {
     width: 100%;
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--color-rule);
-    padding: 0.7rem 0 0.6rem;
+    min-height: 3.1rem;
+    background: var(--color-white);
+    border: 1px solid var(--color-rule);
+    padding: 0.75rem 0.9rem;
     font-size: 0.975rem;
     color: var(--color-text);
-    border-radius: 0;
-    transition: border-color 200ms ease;
+    border-radius: 0.7rem;
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease,
+      background-color 200ms ease;
   }
   .field::placeholder {
     color: #b0a0aa;
   }
   .field:hover {
-    border-color: #d9c4d0;
+    border-color: #d7bdcb;
   }
   .field:focus {
     border-color: var(--color-pink);
+    box-shadow: 0 0 0 3px rgb(236 72 153 / 0.1);
   }
-  /* A 1px underline tint is too weak a keyboard cue on its own, so the shared
-     focus ring is kept on top of the editorial underline. */
   .field:focus-visible {
-    outline: 2px solid var(--color-rose);
-    outline-offset: 3px;
+    outline: 2px solid var(--color-pink);
+    outline-offset: 2px;
   }
   .field[aria-invalid="true"] {
-    border-color: #b4462f;
+    border-color: var(--color-rose);
+    background-color: #fff8fa;
+    box-shadow: 0 0 0 2px rgb(190 24 93 / 0.08);
   }
   select.field {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%2377656f' stroke-width='1.4'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.15rem center;
-    padding-right: 1.5rem;
+    background-position: right 0.9rem center;
+    padding-right: 2.5rem;
   }
   textarea.field {
     resize: vertical;

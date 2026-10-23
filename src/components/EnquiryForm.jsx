@@ -288,9 +288,16 @@ export default function EnquiryForm() {
                                 onSubmit={handleSubmit(onSubmit)}
                                 noValidate
                                 aria-describedby="form-note"
-                                className="rounded-[16px] border border-rule bg-blush/40 p-5 sm:p-7 lg:p-9"
+                                className="rounded-[20px] border border-rule bg-white p-5 shadow-[0_24px_70px_-48px_rgba(53,21,54,0.32)] sm:p-7 lg:rounded-[24px] lg:p-9"
                             >
-                                <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+                                <div className="mb-7 border-b border-rule pb-5">
+                                    <p className="eyebrow text-rose">A few details</p>
+                                    <p className="mt-2 text-[14px] leading-relaxed text-muted">
+                                        Tell us what you are looking for and we will help you find a place to begin.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-6">
                                     {/* Name */}
                                     <Field
                                         id="name"
