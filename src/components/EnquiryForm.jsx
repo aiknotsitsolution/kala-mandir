@@ -544,14 +544,6 @@ export default function EnquiryForm() {
                                         )}
                                     </button>
 
-                                    <p className="mt-4 text-[13px] leading-relaxed text-muted">
-                                        No backend is connected yet, so this opens a
-                                        pre-filled WhatsApp message instead of a
-                                        server submission. Your details stay on your
-                                        device until you press send. See{" "}
-                                        <span className="text-text">README.md</span>{" "}
-                                        to connect a real endpoint.
-                                    </p>
                                 </div>
                             </form>
                         </Reveal>

@@ -19,7 +19,21 @@ export const classes = [
         accent: "pink",
         anchor: "/art#art",
         summary:
-            "Sketching, portrait drawing and the fundamentals of drawing — line, proportion, light and shade — practised steadily on paper.",
+            "Slow down and look closely. Explore sketching and portrait drawing by noticing the lines, proportions and tonal details that make a subject feel present on paper. Build a drawing one observation at a time, then bring those details together in your own work.",
+        learningSteps: [
+            {
+                title: "Line & shape",
+                text: "Start with the outlines and simple forms you can see. Small, considered marks help a sketch take shape without rushing into detail.",
+            },
+            {
+                title: "Proportion",
+                text: "Compare the size and position of the parts of a subject. These relationships help a portrait or drawing feel balanced.",
+            },
+            {
+                title: "Light & shade",
+                text: "Observe where light falls and where shadows gather. Use lighter and darker tones to describe form and add depth to the finished drawing.",
+            },
+        ],
         points: ["Sketching", "Portrait drawing", "Drawing fundamentals"],
         image: {
             src: "/assets/institute/km-artwork-04.webp",
@@ -41,7 +55,21 @@ export const classes = [
         accent: "rose",
         anchor: "/art#art",
         summary:
-            "Oil and acrylic painting alongside creative art and craft — working with colour, texture and materials to build a personal body of work.",
+            "Explore colour on canvas through oil and acrylic painting, then try creative art and craft with different materials. Each offers a different way to work with colour, texture and surface, and to develop a piece at your own pace.",
+        learningSteps: [
+            {
+                title: "Oil painting",
+                text: "Build a painting through colour and visible brushwork. Take time to observe how each area contributes to the whole image.",
+            },
+            {
+                title: "Acrylic painting",
+                text: "Explore another painting medium and make choices about colour, shapes and the way the image comes together on canvas.",
+            },
+            {
+                title: "Art & craft",
+                text: "Move beyond the canvas and work with materials, texture and surface to make creative pieces you can see and handle.",
+            },
+        ],
         points: ["Oil painting", "Acrylic painting", "Creative art and craft"],
         image: {
             src: "/assets/institute/km-artwork-05.webp",
