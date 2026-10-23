@@ -197,6 +197,7 @@ export default function AcademyLanding({ academy = "dance" }) {
       )}
 
       {/* ========== ART ACADEMY ========== */}
+      {isArtAcademy && (
       <section id="art" className="border-t border-[#f3d6e0] bg-white">
         <div className="max-w-6xl mx-auto px-6 py-20">
           {isArtAcademy && (
@@ -349,6 +350,7 @@ export default function AcademyLanding({ academy = "dance" }) {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 }
