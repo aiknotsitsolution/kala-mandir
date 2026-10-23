@@ -237,6 +237,7 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                     })}
                 </RevealGroup>
 
+
                 {/* ── Enquiry panel: a clear next step after browsing ── */}
                 {!artOnly && (
                     <Reveal className="mt-16 lg:mt-24">
