@@ -1,0 +1,410 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   KALA MANDIR — bright editorial design system
+   Warm ivory surfaces carry the page; colour comes from the students' actual
+   artwork. Accents play like a paint palette: coral, orange, cobalt, magenta,
+   yellow and teal. Ink is used for type and selected details (footer, CTAs),
+   never as a dominant surface.
+   ========================================================================== */
+
+@theme {
+  /* Colour tokens — two brand worlds under one roof.
+     ART   → pink & white (blush surfaces, vibrant pink + deep rose accents).
+     DANCE → deep plum + cream (violet, flame-coral and gold energy).
+     A warm white ground and one readable ink carry both worlds so the page
+     stays bright, never dark-luxury. */
+
+  /* Neutrals / ground */
+  --color-ink: #29212b;          /* readable dark (type, ink CTAs) */
+  --color-charcoal: #1c0f1e;     /* deepest plum — used sparingly */
+  --color-paper: #fffcfa;        /* warm white ground */
+  --color-white: #ffffff;
+  --color-text: #29212b;         /* primary text on light */
+  --color-muted: #77656f;        /* secondary text (warm grey-mauve) */
+  --color-rule: #ecdfe6;         /* fine borders on light */
+
+  /* Art world — pink & white */
+  --color-blush: #fce7f3;        /* soft blush surface */
+  --color-blossom: #fdf2f8;      /* pale pink surface wash */
+  --color-pink: #ec4899;         /* vibrant pink */
+  --color-rose: #be185d;         /* deep rose (text / CTA on pink) */
+  --color-lavender: #f0e7ff;     /* soft lavender */
+  --color-butter: #fde68a;       /* artistic yellow accent */
+
+  /* Dance world — plum + rhythm */
+  --color-plum: #351536;         /* deep plum surface */
+  --color-plum-2: #4a1d4c;       /* lifted plum for gradients */
+  --color-cream: #fff8f0;        /* warm cream */
+  --color-flame: #ff6b6b;        /* coral energy */
+  --color-violet: #8b5cf6;       /* electric violet */
+  --color-gold: #fbbf24;         /* golden accent */
+
+  /* Type */
+  --font-display: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Self-hosted fonts (Latin only, no third-party requests) ------- */
+@font-face {
+  font-family: "DM Serif Display";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/dm-serif-display-normal-2.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "DM Serif Display";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/dm-serif-display-italic-1.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/assets/fonts/inter-normal-5.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* --------------------------------- base ---------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-pink);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-rose);
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    font-weight: 400;
+  }
+
+  /* Anchor targets clear the floating navbar */
+  section[id] {
+    scroll-margin-top: 6.5rem;
+  }
+
+  img {
+    -webkit-user-drag: none;
+  }
+}
+
+/* --------------------------- editorial helpers --------------------------- */
+@layer components {
+  .home-page > #about {
+    padding-bottom: 1rem;
+  }
+
+  .home-page > #art {
+    padding-top: 1rem;
+  }
+
+  .about-page > #about {
+    padding-bottom: clamp(2.5rem, 4vw, 4rem);
+  }
+
+  .about-page > #why {
+    padding-top: clamp(2.5rem, 4vw, 4rem);
+  }
+
+  /* Centred editorial container: ~1360px max, fluid 24 → 72px gutters */
+  .shell {
+    width: 100%;
+    max-width: 85rem; /* 1360px */
+    margin-inline: auto;
+    padding-inline: clamp(1.5rem, 4.5vw, 4.5rem);
+  }
+
+  /* One vertical rhythm for every content section — fluid so the cadence
+     stays consistent from phone to desktop instead of stepping at breakpoints. */
+  .section {
+    padding-block: clamp(6rem, 9vw, 9rem);
+  }
+
+  /* Small uppercase eyebrow with restrained tracking */
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* Fine hairline used instead of card borders throughout the page */
+  .hairline {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .hairline-dark {
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+
+  /* Restrained grain for dark, immersive sections only */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.055;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  /* Editorial text link with an animated rule */
+  .rule-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding-bottom: 0.35rem;
+    transition: color 220ms ease;
+  }
+  .rule-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform-origin: left;
+    transform: scaleX(1);
+    transition: transform 260ms ease;
+  }
+  .rule-link:hover::after {
+    transform-origin: right;
+    transform: scaleX(0.15);
+  }
+
+  /* Minimal editorial form fields — bottom rule, no boxes */
+  .field {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color-rule);
+    padding: 0.7rem 0 0.6rem;
+    font-size: 0.975rem;
+    color: var(--color-text);
+    border-radius: 0;
+    transition: border-color 200ms ease;
+  }
+  .field::placeholder {
+    color: #b0a0aa;
+  }
+  .field:hover {
+    border-color: #d9c4d0;
+  }
+  .field:focus {
+    border-color: var(--color-pink);
+  }
+  /* A 1px underline tint is too weak a keyboard cue on its own, so the shared
+     focus ring is kept on top of the editorial underline. */
+  .field:focus-visible {
+    outline: 2px solid var(--color-rose);
+    outline-offset: 3px;
+  }
+  .field[aria-invalid="true"] {
+    border-color: #b4462f;
+  }
+  select.field {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%2377656f' stroke-width='1.4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.15rem center;
+    padding-right: 1.5rem;
+  }
+  textarea.field {
+    resize: vertical;
+    min-height: 5.5rem;
+  }
+
+  /* Ink button — the primary CTA carried through both brand worlds. */
+  .btn-ink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border-radius: 11px;
+    background: var(--color-rose);
+    color: #fff;
+    transition: background-color 200ms ease;
+  }
+  .btn-ink:hover {
+    background: var(--color-pink);
+  }
+
+  /* Pill-wipe button.
+     A fill rises from beneath the label as an expanding ellipse while the
+     label rolls up and its duplicate rolls in, so the button feels pressed
+     open rather than recoloured. Decorative only — the element remains a
+     normal link/button, and the reduced-motion query below drops the effect.
+     --wipe-fill sets the colour of the incoming fill. */
+  .btn-wipe {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .btn-wipe::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--wipe-fill, var(--color-pink));
+    clip-path: ellipse(80% 52% at 50% 152%);
+    transition: clip-path 620ms cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .btn-wipe:hover::before,
+  .btn-wipe:focus-visible::before {
+    clip-path: ellipse(150% 150% at 50% 50%);
+  }
+
+  .btn-wipe__label {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+  }
+  .btn-wipe__text,
+  .btn-wipe__label::after {
+    display: inline-block;
+    transition: transform 620ms cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .btn-wipe__label::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translateY(115%);
+  }
+  .btn-wipe:hover .btn-wipe__text,
+  .btn-wipe:focus-visible .btn-wipe__text {
+    transform: translateY(-115%);
+  }
+  .btn-wipe:hover .btn-wipe__label::after,
+  .btn-wipe:focus-visible .btn-wipe__label::after {
+    transform: translateY(0);
+  }
+
+  /* Soft blend where one brand world hands over to the other, so the page
+     moves from the art pinks into the dance plum without a hard seam. */
+  .world-blend::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: clamp(6rem, 18vh, 12rem);
+    pointer-events: none;
+    background: linear-gradient(to bottom, var(--blend-from, #fdf2f8), transparent);
+  }
+
+  /* Varnish lift for gallery frames. A hover glaze reads like the protective
+     gloss on a finished painting, so it stays inside the studio metaphor
+     rather than looking like a generic card shadow. */
+  .tile-lift {
+    position: relative;
+  }
+  .tile-lift::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(
+      150deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0.05) 42%,
+      transparent 72%
+    );
+    box-shadow: 0 22px 44px -24px rgba(41, 33, 43, 0.55);
+    transition:
+      opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group:hover .tile-lift::after,
+  .group:focus-visible .tile-lift::after {
+    opacity: 1;
+  }
+}
+
+/* ----------------------- reduced-motion & fallbacks ---------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* The pill-wipe is motion, so it is dropped entirely — the button keeps a
+     plain colour change for hover instead of losing its feedback. */
+  .btn-wipe::before {
+    display: none;
+  }
+  .btn-wipe__label::after {
+    content: none;
+  }
+  .btn-wipe:hover .btn-wipe__text,
+  .btn-wipe:focus-visible .btn-wipe__text {
+    transform: none;
+  }
+  .btn-wipe:hover,
+  .btn-wipe:focus-visible {
+    background: var(--wipe-fill, var(--color-pink));
+  }
+}
+
+/* Loader shown until the hero image decodes (removed by React on load) */
+@keyframes km-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+.km-skeleton {
+  background: linear-gradient(100deg, #f0e2ea 30%, #f9eef4 50%, #f0e2ea 70%);
+  background-size: 220% 100%;
+  animation: km-pulse 1.6s ease-in-out infinite;
+}
