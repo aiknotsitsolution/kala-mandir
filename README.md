@@ -36,7 +36,8 @@ npm run preview    # serve the production build locally
 Each page has its own focused content, without repeating gallery or studio
 sections within that page. All pages reuse the same navigation, footer, colour
 system and responsive layouts. Navigation is client-side; direct route visits
-are supported by the Vite development server.
+are supported by the Vite development server and the Vercel rewrite in
+`vercel.json`.
 
 ## Content rules (please keep)
 

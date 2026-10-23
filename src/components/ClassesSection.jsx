@@ -2,7 +2,7 @@
 
 import SectionHeading from "@/components/SectionHeading";
 import { MediaMask, Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
-import ArtBackdrop from "@/components/ArtBackdrop";
+import ArtBackdrop from "@/components/Artbackdrop";
 import { classes } from "@/data/classes";
 import { editorialImages } from "@/data/gallery";
 import SmartImage from "@/components/SmartImage";
