@@ -280,7 +280,7 @@ export default function DanceShowcase() {
       data-tone="dark"
       ref={ref}
       aria-labelledby="dance-title"
-      className="section world-blend relative isolate overflow-hidden bg-plum"
+      className="section relative isolate overflow-hidden bg-plum"
     >
       <div className="relative">
         <div className="shell">

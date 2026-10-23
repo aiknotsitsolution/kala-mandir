@@ -126,11 +126,12 @@
 /* --------------------------- editorial helpers --------------------------- */
 @layer components {
   .home-page > #about {
-    padding-bottom: 1rem;
+    padding-top: clamp(2rem, 4vw, 3rem);
+    padding-bottom: 0;
   }
 
   .home-page > #art {
-    padding-top: 1rem;
+    padding-top: 0;
   }
 
   .about-page > #about {

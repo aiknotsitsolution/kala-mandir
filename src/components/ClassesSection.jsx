@@ -133,7 +133,10 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                 )}
 
                 {/* ── Alternating class features ── */}
-                <RevealGroup className="mt-14 space-y-14 lg:mt-20 lg:space-y-24">
+                <RevealGroup
+                    amount={0.01}
+                    className="mt-14 space-y-14 lg:mt-20 lg:space-y-24"
+                >
                     {visibleClasses.map((item, index) => {
                         const imageRight = index % 2 === 1;
                         return (
