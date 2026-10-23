@@ -1,8 +1,9 @@
-import { ArrowUp, Instagram, Phone, MapPin, MessageCircle } from "lucide-react";
+import { ArrowUp, Instagram, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { siteConfig, contactLinks } from "@/data/siteConfig";
 import { classLinks } from "@/data/classes";
 import { Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 /**
  * Footer (J) — typography-led, restrained dividers.
@@ -116,9 +117,8 @@ export default function Footer() {
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2.5 text-[15px] text-white/70 transition-colors duration-200 hover:text-white"
                                     >
-                                        <MessageCircle
+                                        <WhatsAppIcon
                                             className="h-4 w-4 shrink-0 text-white/40"
-                                            aria-hidden="true"
                                         />
                                         WhatsApp us
                                     </a>

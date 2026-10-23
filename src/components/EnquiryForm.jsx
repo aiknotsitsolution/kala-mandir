@@ -9,13 +9,13 @@ import {
     CheckCircle2,
     Copy,
     Loader2,
-    MessageCircle,
     TriangleAlert,
 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import { Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
 import { buildWhatsAppUrl, contactLinks, siteConfig } from "@/data/siteConfig";
 import { cn } from "@/lib/utils";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 /* -------------------------------------------------------------------------- */
 /* Schema                                                                      */
@@ -239,7 +239,7 @@ export default function EnquiryForm() {
                                     aria-hidden="true"
                                     className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#25D366] text-white"
                                 >
-                                    <MessageCircle className="h-5 w-5" />
+                                    <WhatsAppIcon className="h-5 w-5" />
                                 </span>
                                 <span className="min-w-0 flex-1">
                                     <span className="block text-[15.5px] font-medium text-text">
@@ -456,7 +456,7 @@ export default function EnquiryForm() {
                                                         rel="noopener noreferrer"
                                                         className="inline-flex items-center gap-2 rounded-[9px] bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white transition-opacity hover:opacity-90"
                                                     >
-                                                        <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                                                        <WhatsAppIcon className="h-4 w-4" />
                                                         Open WhatsApp again
                                                     </a>
                                                     <button
@@ -485,7 +485,7 @@ export default function EnquiryForm() {
                                                         onClick={() => window.open(buildWhatsAppUrl(messageRef.current || composed), "_blank", "noopener,noreferrer")}
                                                         className="inline-flex items-center gap-2 rounded-[9px] bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white"
                                                     >
-                                                        <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                                                        <WhatsAppIcon className="h-4 w-4" />
                                                         Try WhatsApp again
                                                     </button>
                                                     <button
@@ -534,7 +534,7 @@ export default function EnquiryForm() {
                                             </>
                                         ) : (
                                             <>
-                                                <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                                                <WhatsAppIcon className="h-4 w-4" />
                                                 Send enquiry on WhatsApp
                                                 <ArrowUpRight
                                                     aria-hidden="true"

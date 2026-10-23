@@ -3,11 +3,11 @@ import {
     Phone,
     Instagram,
     ArrowUpRight,
-    MessageCircle,
 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import { Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
 import { contactLinks, siteConfig } from "@/data/siteConfig";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 /**
  * Location & Contact (I) — verified business details only.
@@ -42,7 +42,7 @@ export default function ContactSection() {
             action: "View profile",
         },
         {
-            icon: MessageCircle,
+            icon: WhatsAppIcon,
             label: "WhatsApp",
             value: siteConfig.whatsapp.display,
             href: contactLinks.whatsapp,

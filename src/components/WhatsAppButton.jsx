@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { MessageCircle } from "lucide-react";
 import { contactLinks } from "@/data/siteConfig";
 import { useInViewSelector } from "@/lib/useScrolledFlag";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 /**
  * Floating WhatsApp affordance.
@@ -45,7 +45,7 @@ export default function WhatsAppButton() {
                         aria-hidden="true"
                         className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#25D366] text-white"
                     >
-                        <MessageCircle className="h-4.5 w-4.5" />
+                        <WhatsAppIcon className="h-5 w-5" />
                     </span>
                     <span className="hidden text-[14px] font-medium sm:inline">
                         WhatsApp us
