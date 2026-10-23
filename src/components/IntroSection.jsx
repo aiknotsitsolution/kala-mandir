@@ -12,8 +12,37 @@ import { editorialImages } from "@/data/gallery";
  * One striking image, a large serif heading and compact supporting copy.
  * No feature lists, no invented history or credentials.
  */
-export default function IntroSection({ showStudioNote = true }) {
+export default function IntroSection({
+    showStudioNote = true,
+    showAcademyCards = false,
+}) {
     const { intro } = editorialImages;
+    const academyCards = [
+        {
+            title: "Dance Academy",
+            eyebrow: "Move with confidence",
+            tagline: "Discipline · Grace · Confidence",
+            action: "Explore dance classes",
+            href: "/dance#dance",
+            image: editorialImages.danceShowcase.group,
+            surface: "bg-blossom",
+            accent: "text-rose",
+            imageFade: "to-blossom/70",
+            button: "bg-rose text-white group-hover:bg-pink",
+        },
+        {
+            title: "Art Academy",
+            eyebrow: "Make something yours",
+            tagline: "Imagine · Create · Grow",
+            action: "Explore art classes",
+            href: "/art#art",
+            image: editorialImages.artDetail[1],
+            surface: "bg-lavender",
+            accent: "text-violet",
+            imageFade: "to-lavender/70",
+            button: "bg-violet text-white group-hover:bg-rose",
+        },
+    ];
 
     return (
         <section
@@ -23,6 +52,58 @@ export default function IntroSection({ showStudioNote = true }) {
             className="section relative bg-paper"
         >
             <div className="shell">
+                {showAcademyCards && (
+                    <div className="mb-14 grid grid-cols-1 gap-4 sm:mb-16 sm:grid-cols-2 sm:gap-5 lg:mb-20">
+                        {academyCards.map((card, index) => (
+                            <Reveal
+                                key={card.title}
+                                delay={index * 0.1}
+                                amount={0.05}
+                            >
+                                <Link
+                                    to={card.href}
+                                    className={`group flex min-h-40 overflow-hidden rounded-[18px] border border-white/80 ${card.surface} shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose sm:min-h-44 lg:min-h-48`}
+                                >
+                                    <div className="relative w-[38%] shrink-0 overflow-hidden sm:w-[40%]">
+                                        <SmartImage
+                                            image={card.image}
+                                            alt=""
+                                            sizes="(max-width: 639px) 38vw, 20vw"
+                                            className="h-full min-h-40 w-full sm:min-h-44 lg:min-h-48"
+                                            imgClassName="transition-transform duration-700 ease-out group-hover:scale-105"
+                                        />
+                                        <div
+                                            aria-hidden="true"
+                                            className={`pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-r from-transparent ${card.imageFade}`}
+                                        />
+                                    </div>
+
+                                    <div className="flex min-w-0 flex-1 flex-col items-start justify-center p-4 sm:p-5 lg:p-6">
+                                        <span className={`eyebrow ${card.accent}`}>
+                                            {card.eyebrow}
+                                        </span>
+                                        <h2 className="mt-2 font-display text-[clamp(1.35rem,2.2vw,2rem)] leading-[1.05] text-text">
+                                            {card.title}
+                                        </h2>
+                                        <p className="mt-2 text-[11px] leading-snug text-muted sm:text-[13px]">
+                                            {card.tagline}
+                                        </p>
+                                        <span
+                                            className={`mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-[11px] font-medium transition-colors sm:mt-5 sm:px-4 sm:text-[12px] ${card.button}`}
+                                        >
+                                            {card.action}
+                                            <ArrowUpRight
+                                                aria-hidden="true"
+                                                className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                                            />
+                                        </span>
+                                    </div>
+                                </Link>
+                            </Reveal>
+                        ))}
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 gap-y-14 lg:grid-cols-12 lg:gap-x-12">
                     {/* Image — asymmetric, offset from the top rule */}
                     <div className="lg:col-span-5 lg:pt-2">
@@ -98,6 +179,10 @@ export default function IntroSection({ showStudioNote = true }) {
                             </Reveal>
                         )}
                     </div>
+
+
+
+                    
 
                     {/* Copy */}
                     <div className="lg:col-span-6 lg:col-start-7">

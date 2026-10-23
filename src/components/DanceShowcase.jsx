@@ -315,7 +315,7 @@ export default function DanceShowcase() {
           </div>
 
           {/* Full-bleed image band */}
-          <div className="relative mt-16 overflow-hidden rounded-2xl lg:mt-24 lg:rounded-[22px]">
+          <div className="relative mt-12 overflow-hidden rounded-[22px] border border-gold/25 bg-charcoal shadow-[0_28px_70px_-34px_rgba(0,0,0,0.75)] sm:mt-16 lg:mt-20 lg:rounded-[28px]">
             <MediaMask>
               <motion.div
                 style={parallax ? { y: bandY } : undefined}
@@ -347,12 +347,12 @@ export default function DanceShowcase() {
           </div>
 
           {/* Supporting images — better rhythm */}
-          <div className="mt-5 grid grid-cols-12 gap-4 sm:mt-6 sm:gap-5">
+          <div className="mt-5 grid grid-cols-12 gap-3 rounded-[22px] border border-white/10 bg-plum-2/35 p-3 sm:mt-6 sm:gap-5 sm:p-5 lg:rounded-[28px]">
             <Reveal variants={revealKinetic} className="col-span-7 sm:col-span-4">
               <SmartImage
                 image={danceShowcase.group}
                 sizes="(max-width: 639px) 60vw, 30vw"
-                className="aspect-[4/3] w-full rounded-xl"
+                className="aspect-[4/3] w-full rounded-xl border border-gold/20 shadow-[0_14px_36px_-22px_rgba(0,0,0,0.65)]"
               />
             </Reveal>
 
@@ -364,7 +364,7 @@ export default function DanceShowcase() {
               <SmartImage
                 image={danceShowcase.zumba}
                 sizes="(max-width: 639px) 40vw, 30vw"
-                className="aspect-[3/4] w-full rounded-xl"
+                className="aspect-[3/4] w-full rounded-xl border border-flame/25 shadow-[0_14px_36px_-22px_rgba(0,0,0,0.65)]"
                 position="50% 30%"
               />
             </Reveal>
@@ -377,35 +377,35 @@ export default function DanceShowcase() {
               <SmartImage
                 image={danceShowcase.wedding}
                 sizes="(max-width: 639px) 92vw, 30vw"
-                className="aspect-[16/10] w-full rounded-xl sm:aspect-[4/3]"
+                className="aspect-[16/10] w-full rounded-xl border border-gold/20 shadow-[0_14px_36px_-22px_rgba(0,0,0,0.65)] sm:aspect-[4/3]"
               />
             </Reveal>
           </div>
 
           {/* Highlights */}
-          <RevealGroup className="mt-20 grid grid-cols-1 gap-x-12 gap-y-0 lg:mt-28 lg:grid-cols-3">
+          <RevealGroup className="mt-12 grid grid-cols-1 gap-4 sm:mt-16 lg:grid-cols-3">
             {HIGHLIGHTS.map(({ icon: Icon, title, body }, i) => (
               <RevealItem
                 key={title}
                 variants={revealKinetic}
-                className="border-t border-white/15 py-8 lg:py-9"
+                className="rounded-[18px] border border-gold/30 bg-cream p-5 shadow-[0_18px_40px_-28px_rgba(0,0,0,0.5)] sm:p-6 lg:p-7"
               >
                 <div className="flex items-start gap-5">
-                  <span className="eyebrow mt-1.5 tabular-nums text-white/40">
+                  <span className="eyebrow mt-1.5 tabular-nums text-rose/70">
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-3">
                       <Icon
-                        className="h-4.5 w-4.5 shrink-0 text-gold"
+                        className="h-4.5 w-4.5 shrink-0 text-rose"
                         aria-hidden="true"
                       />
-                      <h3 className="font-display text-[1.45rem] leading-tight text-white sm:text-[1.6rem]">
+                      <h3 className="font-display text-[1.4rem] leading-tight text-plum sm:text-[1.55rem]">
                         {title}
                       </h3>
                     </div>
-                    <p className="mt-3 text-[0.975rem] leading-[1.7] text-white/65">
+                    <p className="mt-3 text-[0.95rem] leading-[1.7] text-text/70">
                       {body}
                     </p>
                   </div>

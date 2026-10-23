@@ -61,17 +61,21 @@ const CROPS = {
     landscape: "aspect-[4/3]",
 };
 
-export default function ArtGallery() {
+export default function ArtGallery({ artOnly = false }) {
     const [active, setActive] = useState("all");
     const [openIndex, setOpenIndex] = useState(null);
     const reduce = useReducedMotion();
+    const visibleItems = useMemo(
+        () => artOnly ? galleryItems.filter((item) => item.category !== "dance") : galleryItems,
+        [artOnly],
+    );
 
     const filtered = useMemo(
         () =>
             active === "all"
-                ? galleryItems
-                : galleryItems.filter((item) => item.category === active),
-        [active],
+                ? visibleItems
+                : visibleItems.filter((item) => item.category === active),
+        [active, visibleItems],
     );
 
     return (
@@ -100,15 +104,26 @@ export default function ArtGallery() {
                     <SectionHeading
                         id="gallery-title"
                         number="04"
-                        eyebrow="Student exhibition"
+                        eyebrow={artOnly ? "Art & craft exhibition" : "Student exhibition"}
                         title={
-                            <>
-                                Made in{" "}
-                                <span className="italic text-pink">our classes</span>,
-                                kept with pride.
-                            </>
+                            artOnly ? (
+                                <>
+                                    Ideas in colour,{" "}
+                                    <span className="italic text-pink">made by hand.</span>
+                                </>
+                            ) : (
+                                <>
+                                    Made in{" "}
+                                    <span className="italic text-pink">our classes</span>,
+                                    kept with pride.
+                                </>
+                            )
                         }
-                        standfirst="A curated wall of actual student work from Kala Mandir — drawing, painting, craft and dance — presented the way a gallery would hang it."
+                        standfirst={
+                            artOnly
+                                ? "Explore student drawings, paintings and craft projects from Kala Mandir. Each piece reflects a different way of looking closely, working with colour and making something by hand."
+                                : "A curated wall of actual student work from Kala Mandir — drawing, painting, craft and dance — presented the way a gallery would hang it."
+                        }
                         className="max-w-[38rem]"
                     >
                         <BrushStroke className="mt-7 h-4 w-56 text-pink/70" />
@@ -142,8 +157,8 @@ export default function ArtGallery() {
                                         {category.label}
                                         <span className="ml-1.5 tabular-nums text-[11px] opacity-60">
                                             {category.id === "all"
-                                                ? galleryItems.length
-                                                : galleryItems.filter(
+                                                ? visibleItems.length
+                                                : visibleItems.filter(
                                                       (i) => i.category === category.id,
                                                   ).length}
                                         </span>
@@ -284,10 +299,10 @@ export default function ArtGallery() {
                             </Link>
                         </Magnetic>
                         <Link
-                            to="/art#art-detail"
+                            to={artOnly ? "/art#art" : "/art#art-detail"}
                             className="rule-link text-[15px] text-text hover:text-rose"
                         >
-                            More about the syllabus
+                            {artOnly ? "Explore art classes" : "More about the syllabus"}
                         </Link>
                     </div>
                 </RevealGroup>

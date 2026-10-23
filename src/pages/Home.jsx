@@ -12,7 +12,7 @@ export default function Home() {
     return (
         <main id="main" className="home-page">
             <Hero />
-            <IntroSection showStudioNote={false} />
+            <IntroSection showStudioNote={false} showAcademyCards />
             <ClassesSection showArtDetail={false} />
         </main>
     );
