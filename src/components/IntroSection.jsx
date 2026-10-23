@@ -53,7 +53,7 @@ export default function IntroSection({
         >
             <div className="shell">
                 {showAcademyCards && (
-                    <div className="mb-14 grid grid-cols-1 gap-4 sm:mb-16 sm:grid-cols-2 sm:gap-5 lg:mb-20">
+                    <div className="mb-14 grid grid-cols-1 items-stretch gap-4 sm:mb-16 sm:grid-cols-2 sm:gap-5 lg:mb-20">
                         {academyCards.map((card, index) => (
                             <Reveal
                                 key={card.title}
@@ -62,7 +62,7 @@ export default function IntroSection({
                             >
                                 <Link
                                     to={card.href}
-                                    className={`group flex min-h-40 overflow-hidden rounded-[18px] border border-white/80 ${card.surface} shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose sm:min-h-44 lg:min-h-48`}
+                                    className={`group flex h-full min-h-40 overflow-hidden rounded-[18px] border border-white/80 ${card.surface} shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-rose sm:min-h-44 lg:min-h-48`}
                                 >
                                     <div className="relative w-[38%] shrink-0 overflow-hidden sm:w-[40%]">
                                         <SmartImage

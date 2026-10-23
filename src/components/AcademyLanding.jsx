@@ -39,11 +39,11 @@ export default function AcademyLanding({ academy = "dance" }) {
 
   const { danceShowcase } = editorialImages;
   const danceGallery = [
-    instagramPosts[0],
     danceShowcase.group,
     danceShowcase.zumba,
     danceShowcase.wedding,
-    danceShowcase.wide,
+    danceShowcase.duo,
+    instagramPosts[2],
   ];
   const artGallery = [
     ...editorialImages.artDetail,
@@ -175,27 +175,21 @@ export default function AcademyLanding({ academy = "dance" }) {
 
           {/* Dance Gallery */}
           <div className="mb-8">
-            <h3 className="text-2xl font-display mb-6 text-center">Dance Gallery</h3>
+            <h3 className="text-2xl font-display mb-6 text-center">Our Student Dance</h3>
             <div className="columns-2 gap-4 md:columns-3 lg:columns-5">
-              {danceGallery.map((img) => {
-                const isAcademyPoster = img.id === instagramPosts[0].id;
-                return (
+              {danceGallery.map((img) => (
                   <figure
                     key={img.id}
-                    className={`mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-[#f3d6e0] shadow-md sm:mb-5 ${
-                      isAcademyPoster ? "bg-charcoal" : "bg-white"
-                    }`}
+                    className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-[#f3d6e0] bg-white shadow-md sm:mb-5"
                   >
                     <SmartImage
                       image={img}
-                      fit={isAcademyPoster ? "contain" : "cover"}
                       sizes="(max-width: 767px) 50vw, 20vw"
                       className="w-full"
                       imgClassName="transition-transform duration-500 hover:scale-105"
                     />
                   </figure>
-                );
-              })}
+              ))}
             </div>
           </div>
         </div>
@@ -325,7 +319,7 @@ export default function AcademyLanding({ academy = "dance" }) {
             </div>
           )}
 
-          {/* Student Art Gallery preview */}
+          {/* Student artwork gallery */}
           <div className="mt-16">
             <h3 className="text-2xl font-display mb-6 text-center">Our Student Art</h3>
             <RevealGroup
