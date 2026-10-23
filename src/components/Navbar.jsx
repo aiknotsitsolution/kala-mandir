@@ -56,14 +56,14 @@ export default function Navbar() {
             window.removeEventListener("resize", onScroll);
             if (frame) cancelAnimationFrame(frame);
         };
-    }, []);
+    }, [pathname]);
 
     // Close the menu if the viewport grows to desktop.
     useEffect(() => {
         if (isDesktop) setMenuOpen(false);
     }, [isDesktop]);
 
-    const dark = tone === "dark";
+    const dark = pathname === "/dance" || tone === "dark";
 
     return (
         <>

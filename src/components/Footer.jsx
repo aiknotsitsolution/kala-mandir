@@ -1,4 +1,4 @@
-import { ArrowUp, Instagram, Phone, MapPin } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Instagram, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { siteConfig, contactLinks } from "@/data/siteConfig";
 import { classLinks } from "@/data/classes";
@@ -25,19 +25,49 @@ export default function Footer() {
             data-tone="dark"
             className="grain relative isolate overflow-hidden bg-plum text-white"
         >
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(70%_100%_at_50%_0%,rgba(139,92,246,0.17),transparent_70%)]"
+            />
             <div className="relative">
                 <div className="shell">
-                    {/* Big wordmark row */}
-                    <Reveal className="border-b border-white/12 pb-10 pt-20 sm:pt-24 lg:pt-28">
-                        <p className="eyebrow text-white/40">Where art comes alive</p>
-                        <p className="mt-4 font-display text-[clamp(2.4rem,8vw,6rem)] leading-[0.95] tracking-[-0.02em] text-white">
-                            Kala Mandir
-                            <span className="text-pink">.</span>
-                        </p>
-                        <p className="mt-3 max-w-[34rem] text-[15.5px] leading-relaxed text-white/55">
-                            {siteConfig.name} — art and dance classes in Sector 52,
-                            Noida.
-                        </p>
+                    {/* Brand masthead */}
+                    <Reveal className="flex flex-col gap-7 border-b border-white/12 pb-10 pt-16 sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:pb-12 sm:pt-20 lg:pt-24">
+                        <div className="flex min-w-0 flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7">
+                            <Link
+                                to="/"
+                                aria-label="Kala Mandir home"
+                                className="inline-flex shrink-0 items-center rounded-xl transition-opacity hover:opacity-85"
+                            >
+                                <img
+                                    src="/assets/images/kalamandir-lotus-logo.png"
+                                    alt="Kala Mandir — Art, Dance & Creativity"
+                                    width={330}
+                                    height={200}
+                                    loading="lazy"
+                                    className="h-auto w-40 object-contain sm:w-44 lg:w-48"
+                                />
+                            </Link>
+                            <div className="max-w-[30rem] border-l border-white/15 pl-5 sm:pl-6">
+                                <p className="eyebrow text-gold/80">
+                                    Art · Dance · Creativity
+                                </p>
+                                <p className="mt-2 text-[14px] leading-relaxed text-white/60 sm:text-[14.5px]">
+                                    A welcoming place to learn, practise and create
+                                    in Sector 52, Noida.
+                                </p>
+                            </div>
+                        </div>
+                        <Link
+                            to="/contact#enquiry"
+                            className="group inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-full border border-gold/40 bg-gold/10 px-5 py-3 text-[14px] font-medium text-cream transition-colors duration-200 hover:border-gold/70 hover:bg-gold/20 sm:self-center"
+                        >
+                            Book a trial class
+                            <ArrowUpRight
+                                aria-hidden="true"
+                                className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                            />
+                        </Link>
                     </Reveal>
 
                     {/* Link columns */}
