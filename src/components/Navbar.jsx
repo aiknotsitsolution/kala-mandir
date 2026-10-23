@@ -78,18 +78,12 @@ export default function Navbar() {
                 initial={reduce ? false : { y: -24, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 0.61, 0.36, 1] }}
-                className={cn(
-                    "fixed inset-x-0 top-0 z-50",
-                    pathname === "/dance" ? "px-0" : "px-3 sm:px-5",
-                )}
+                className="fixed inset-x-0 top-0 z-50 px-3 sm:px-5"
             >
                 <nav
                     aria-label="Primary"
                     className={cn(
-                        "mx-auto flex w-full items-center justify-between border transition-all duration-300 ease-out",
-                        pathname === "/dance"
-                            ? "max-w-none rounded-none"
-                            : "max-w-[85rem] rounded-[14px]",
+                        "mx-auto flex w-full max-w-[85rem] items-center justify-between rounded-[14px] border transition-all duration-300 ease-out",
                         // glass surface
                         dark
                             ? "border-white/12 bg-plum/60 shadow-[0_10px_40px_-24px_rgba(0,0,0,0.75)] backdrop-blur-xl"
