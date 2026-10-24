@@ -3,6 +3,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import { ArrowUpRight, Music, Users, Heart, Palette, Brush, Camera } from "lucide-react";
 import { Link } from "react-router-dom";
 import SmartImage from "@/components/SmartImage";
+import ArtBackdrop from "@/components/Artbackdrop";
 import { Reveal, RevealGroup, RevealItem, MediaMask } from "@/components/Reveal";
 import { editorialImages, instagramPosts, studioLife } from "@/data/gallery";
 import { revealKinetic } from "@/lib/motion";
@@ -14,6 +15,10 @@ const DANCE_CLASSES = [
   { icon: Heart, title: "Bollywood" },
   { icon: Music, title: "Freestyle" },
   { icon: Users, title: "Kids Dance" },
+  { icon: Users, title: "Couple Dance" },
+
+  { icon: Users, title: "Wedding Dance" },
+
 ];
 
 const ART_CLASSES = [
@@ -198,8 +203,12 @@ export default function AcademyLanding({ academy = "dance" }) {
 
       {/* ========== ART ACADEMY ========== */}
       {isArtAcademy && (
-      <section id="art" className="border-t border-[#f3d6e0] bg-white">
-        <div className="max-w-6xl mx-auto px-6 py-20">
+      <section
+        id="art"
+        className="relative isolate overflow-hidden border-t border-[#f3d6e0] bg-[#fffafc]"
+      >
+        <ArtBackdrop variant="classes" />
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-20">
           {isArtAcademy && (
             <div className="relative mb-16 min-h-[22rem] overflow-hidden rounded-[24px] bg-[#351536] shadow-[0_26px_70px_-38px_rgba(53,21,54,0.65)] sm:min-h-[28rem] lg:mb-20 lg:min-h-[34rem]">
               <SmartImage
