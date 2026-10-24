@@ -62,7 +62,7 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
             aria-labelledby="classes-title"
             className="section relative overflow-hidden bg-white"
         >
-            <ArtBackdrop variant="classes" />
+            {artOnly && <ArtBackdrop variant="classes" />}
 
             {/* Anchor targeted by the hero "Explore Classes" CTA */}
             <div

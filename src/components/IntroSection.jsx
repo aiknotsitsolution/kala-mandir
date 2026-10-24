@@ -293,6 +293,7 @@ import { editorialImages } from "@/data/gallery";
 export default function IntroSection({
     showStudioNote = true,
     showAcademyCards = false,
+    showIntroduction = true,
 }) {
     const { intro } = editorialImages;
 
@@ -493,6 +494,7 @@ export default function IntroSection({
                 </div>
                 {/* ========== END DANCE CLASSES SECTION ========== */}
 
+                {showIntroduction && (
                 <div className="grid grid-cols-1 gap-y-14 lg:grid-cols-12 lg:gap-x-12">
                     {/* Image — asymmetric, offset from the top rule */}
                     <div className="lg:col-span-5 lg:pt-2">
@@ -655,7 +657,8 @@ export default function IntroSection({
                         </Reveal>
                     </div>
                 </div>
-            </div>
+                    )}
+                </div>
         </section>
     );
 }
