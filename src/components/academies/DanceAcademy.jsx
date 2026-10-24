@@ -103,57 +103,48 @@ export default function DanceAcademy() {
             className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"
           />
 
-          {/* Centered content + controls */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-14 pb-12 text-center sm:px-20">
             <p className="mb-3 text-sm uppercase tracking-[0.25em] text-gold">
               Dance Academy
             </p>
             <h1 className="font-display text-5xl font-medium text-cream md:text-6xl lg:text-7xl">
               Grace in Every Move
             </h1>
+          </div>
 
-            {/* Carousel controls – middle center */}
-            <div className="mt-10 flex items-center gap-3">
+          <button
+            type="button"
+            aria-label="Previous Dance Academy photo"
+            onClick={() =>
+              setHeroIndex((index) => (index - 1 + danceHeroImages.length) % danceHeroImages.length)
+            }
+            className="absolute left-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/50 bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60 sm:left-6"
+          >
+            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next Dance Academy photo"
+            onClick={() => setHeroIndex((index) => (index + 1) % danceHeroImages.length)}
+            className="absolute right-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/50 bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60 sm:right-6"
+          >
+            <ChevronRight className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <div className="absolute inset-x-0 bottom-6 z-20 flex items-center justify-center gap-2.5">
+            {danceHeroImages.map((image, index) => (
               <button
+                key={image.src}
                 type="button"
-                aria-label="Previous Dance Academy photo"
-                onClick={() =>
-                  setHeroIndex(
-                    (index) =>
-                      (index - 1 + danceHeroImages.length) % danceHeroImages.length
-                  )
-                }
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-black/40 text-white transition hover:bg-white/20"
-              >
-                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-              </button>
-
-              {danceHeroImages.map((image, index) => (
-                <button
-                  key={image.src}
-                  type="button"
-                  aria-label={`Show Dance Academy photo ${index + 1}`}
-                  aria-current={index === heroIndex ? "true" : undefined}
-                  onClick={() => setHeroIndex(index)}
-                  className={`h-2.5 rounded-full transition-all ${
-                    index === heroIndex
-                      ? "w-7 bg-white"
-                      : "w-2.5 bg-white/55 hover:bg-white/80"
-                  }`}
-                />
-              ))}
-
-              <button
-                type="button"
-                aria-label="Next Dance Academy photo"
-                onClick={() =>
-                  setHeroIndex((index) => (index + 1) % danceHeroImages.length)
-                }
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-black/40 text-white transition hover:bg-white/20"
-              >
-                <ChevronRight className="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
+                aria-label={`Show Dance Academy photo ${index + 1}`}
+                aria-current={index === heroIndex ? "true" : undefined}
+                onClick={() => setHeroIndex(index)}
+                className={`h-2.5 rounded-full shadow-sm transition-all ${
+                  index === heroIndex
+                    ? "w-7 bg-white"
+                    : "w-2.5 bg-white/65 hover:bg-white"
+                }`}
+              />
+            ))}
           </div>
         </div>
 

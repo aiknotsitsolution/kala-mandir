@@ -70,7 +70,7 @@ export default function ArtAcademy() {
             role="group"
             aria-roledescription="slide"
             aria-label={`Photo ${heroIndex + 1} of ${artHeroImages.length}: ${artHeroImages[heroIndex].alt}`}
-            className="relative z-10 mx-auto flex min-h-[22rem] max-w-6xl flex-col justify-center px-6 py-12 sm:min-h-[28rem] sm:px-10 lg:min-h-[34rem] lg:px-16"
+            className="relative z-10 mx-auto flex min-h-[22rem] max-w-6xl flex-col justify-center px-14 py-12 pb-24 sm:min-h-[28rem] sm:px-20 sm:pb-28 lg:min-h-[34rem] lg:px-16"
           >
             <p className="eyebrow text-gold">Art Academy</p>
             <h1 className="mt-4 max-w-2xl font-display text-[clamp(2.8rem,7vw,5.5rem)] leading-[1.02] text-cream">
@@ -81,45 +81,40 @@ export default function ArtAcademy() {
               Explore drawing, painting and art craft through patient studio
               practice, observation and colour.
             </p>
-            <div className="mt-8 flex items-center gap-3">
+          </div>
+          <button
+            type="button"
+            aria-label="Previous Art Academy photo"
+            onClick={() =>
+              setHeroIndex((index) => (index - 1 + artHeroImages.length) % artHeroImages.length)
+            }
+            className="absolute left-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/50 bg-[#351536]/50 text-white backdrop-blur-sm transition hover:bg-[#351536]/75 sm:left-6"
+          >
+            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next Art Academy photo"
+            onClick={() => setHeroIndex((index) => (index + 1) % artHeroImages.length)}
+            className="absolute right-3 top-1/2 z-20 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/50 bg-[#351536]/50 text-white backdrop-blur-sm transition hover:bg-[#351536]/75 sm:right-6"
+          >
+            <ChevronRight className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <div className="absolute inset-x-0 bottom-6 z-20 flex items-center justify-center gap-2.5">
+            {artHeroImages.map((image, index) => (
               <button
+                key={image.src}
                 type="button"
-                aria-label="Previous Art Academy photo"
-                onClick={() =>
-                  setHeroIndex(
-                    (index) =>
-                      (index - 1 + artHeroImages.length) % artHeroImages.length
-                  )
-                }
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-[#351536]/50 text-white transition hover:bg-white/20"
-              >
-                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-              </button>
-              {artHeroImages.map((image, index) => (
-                <button
-                  key={image.src}
-                  type="button"
-                  aria-label={`Show Art Academy photo ${index + 1}`}
-                  aria-current={index === heroIndex ? "true" : undefined}
-                  onClick={() => setHeroIndex(index)}
-                  className={`h-2.5 rounded-full transition-all ${
-                    index === heroIndex
-                      ? "w-7 bg-white"
-                      : "w-2.5 bg-white/55 hover:bg-white/80"
-                  }`}
-                />
-              ))}
-              <button
-                type="button"
-                aria-label="Next Art Academy photo"
-                onClick={() =>
-                  setHeroIndex((index) => (index + 1) % artHeroImages.length)
-                }
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-[#351536]/50 text-white transition hover:bg-white/20"
-              >
-                <ChevronRight className="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
+                aria-label={`Show Art Academy photo ${index + 1}`}
+                aria-current={index === heroIndex ? "true" : undefined}
+                onClick={() => setHeroIndex(index)}
+                className={`h-2.5 rounded-full shadow-sm transition-all ${
+                  index === heroIndex
+                    ? "w-7 bg-white"
+                    : "w-2.5 bg-white/65 hover:bg-white"
+                }`}
+              />
+            ))}
           </div>
         </div>
 
