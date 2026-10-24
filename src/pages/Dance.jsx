@@ -1,10 +1,9 @@
-import AcademyLanding from "../components/AcademyLanding";
+import DanceAcademy from "@/components/academies/DanceAcademy";
 
 export default function Dance() {
     return (
         <main id="main">
-            
-            <AcademyLanding />
+            <DanceAcademy />
         </main>
     );
 }

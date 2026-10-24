@@ -1,9 +1,9 @@
-import AcademyLanding from "@/components/AcademyLanding";
+import ArtAcademy from "@/components/academies/ArtAcademy";
 
 export default function Art() {
     return (
         <main id="main">
-            <AcademyLanding academy="art" />
+            <ArtAcademy />
         </main>
     );
 }

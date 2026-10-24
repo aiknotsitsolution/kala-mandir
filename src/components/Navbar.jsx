@@ -18,7 +18,7 @@ export default function Navbar() {
     const scrolled = useScrolled(40);
     const { pathname } = useLocation();
     const [menuOpen, setMenuOpen] = useState(false);
-    const [tone, setTone] = useState("dark");
+    const [tone, setTone] = useState("light");
     const reduce = useReducedMotion();
     const isDesktop = useIsDesktop();
 
@@ -32,7 +32,7 @@ export default function Navbar() {
         const update = () => {
             frame = 0;
             const sections = document.querySelectorAll("[data-tone]");
-            let next = "dark";
+            let next = "light";
             for (const section of sections) {
                 const rect = section.getBoundingClientRect();
                 if (rect.top <= probe && rect.bottom > probe) {
@@ -63,7 +63,7 @@ export default function Navbar() {
         if (isDesktop) setMenuOpen(false);
     }, [isDesktop]);
 
-    const dark = pathname === "/dance" || tone === "dark";
+    const dark = tone === "dark";
 
     return (
         <>
