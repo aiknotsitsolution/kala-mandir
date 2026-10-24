@@ -18,6 +18,7 @@ export default function SectionHeading({
     number,
     className,
     children,
+    showRule = true,
 }) {
     const reduce = useReducedMotion();
     const isDark = tone === "dark";
@@ -79,18 +80,20 @@ export default function SectionHeading({
 
             {children}
 
-            <motion.div
-                aria-hidden="true"
-                className={cn(
-                    "mt-9 h-px w-full origin-left",
-                    isDark ? "bg-white/15" : "bg-rule",
-                    align === "center" && "mx-auto",
-                )}
-                initial={reduce ? undefined : { scaleX: 0 }}
-                whileInView={reduce ? undefined : { scaleX: 1 }}
-                viewport={{ once: true, amount: 0.6 }}
-                transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1], delay: 0.15 }}
-            />
+            {showRule && (
+                <motion.div
+                    aria-hidden="true"
+                    className={cn(
+                        "mt-9 h-px w-full origin-left",
+                        isDark ? "bg-white/15" : "bg-rule",
+                        align === "center" && "mx-auto",
+                    )}
+                    initial={reduce ? undefined : { scaleX: 0 }}
+                    whileInView={reduce ? undefined : { scaleX: 1 }}
+                    viewport={{ once: true, amount: 0.6 }}
+                    transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1], delay: 0.15 }}
+                />
+            )}
         </RevealGroup>
     );
 }

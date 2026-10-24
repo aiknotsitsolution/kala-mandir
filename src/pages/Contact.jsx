@@ -9,7 +9,7 @@ function ContactBanner() {
     return (
         <section
             aria-labelledby="contact-banner-title"
-            className="relative isolate min-h-[470px] overflow-hidden bg-plum sm:min-h-[520px] lg:min-h-[580px]"
+            className="relative isolate min-h-[540px] overflow-hidden bg-plum sm:min-h-[600px] lg:min-h-[660px]"
         >
             <Reveal className="absolute inset-0">
                 <SmartImage
@@ -29,7 +29,7 @@ function ContactBanner() {
                 aria-hidden="true"
                 className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-charcoal/45 to-transparent"
             />
-            <div className="relative z-10 mx-auto flex min-h-[470px] max-w-[85rem] items-center px-6 pb-10 pt-28 sm:min-h-[520px] sm:px-10 sm:pt-32 lg:min-h-[580px] lg:px-14">
+            <div className="relative z-10 mx-auto flex min-h-[540px] max-w-[85rem] items-center px-6 pb-10 pt-28 sm:min-h-[600px] sm:px-10 sm:pt-32 lg:min-h-[660px] lg:px-14">
                 <div className="max-w-3xl">
                     <p className="eyebrow flex items-center gap-2 text-cream/75">
                         <MapPin aria-hidden="true" className="h-4 w-4 text-gold" />

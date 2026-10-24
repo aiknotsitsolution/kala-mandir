@@ -9,6 +9,8 @@ import {
     CheckCircle2,
     Copy,
     Loader2,
+    MessageSquare,
+    Phone,
     TriangleAlert,
 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
@@ -40,6 +42,11 @@ const AGE_GROUPS = [
 ];
 
 const METHODS = ["WhatsApp", "Phone call", "SMS"];
+const METHOD_ICONS = {
+    WhatsApp: WhatsAppIcon,
+    "Phone call": Phone,
+    SMS: MessageSquare,
+};
 
 const schema = z.object({
     name: z
@@ -387,24 +394,31 @@ export default function EnquiryForm() {
                                             Preferred contact method
                                         </legend>
                                         <div className="flex flex-wrap gap-2.5">
-                                            {METHODS.map((method) => (
-                                                <label
-                                                    key={method}
-                                                    className={cn(
-                                                        "cursor-pointer rounded-full border px-4 py-2.5 text-[14px] transition-all duration-200",
-                                                        "has-[:checked]:border-text has-[:checked]:bg-text has-[:checked]:text-paper",
-                                                        "border-rule text-muted hover:border-[#c9c2b5] hover:text-text",
-                                                    )}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        value={method}
-                                                        className="sr-only"
-                                                        {...register("method")}
-                                                    />
-                                                    {method}
-                                                </label>
-                                            ))}
+                                            {METHODS.map((method) => {
+                                                const MethodIcon = METHOD_ICONS[method];
+                                                return (
+                                                    <label
+                                                        key={method}
+                                                        className={cn(
+                                                            "inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2.5 text-[14px] transition-all duration-200",
+                                                            "has-[:checked]:border-text has-[:checked]:bg-text has-[:checked]:text-paper",
+                                                            "border-rule text-muted hover:border-[#c9c2b5] hover:text-text",
+                                                        )}
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            value={method}
+                                                            className="sr-only"
+                                                            {...register("method")}
+                                                        />
+                                                        <MethodIcon
+                                                            aria-hidden="true"
+                                                            className="h-4 w-4"
+                                                        />
+                                                        {method}
+                                                    </label>
+                                                );
+                                            })}
                                         </div>
                                         {errors.method && (
                                             <FieldError id="method-error">

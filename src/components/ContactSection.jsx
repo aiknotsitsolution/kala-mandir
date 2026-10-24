@@ -76,18 +76,19 @@ export default function ContactSection() {
                                 </>
                             }
                             standfirst="Kala Mandir Art and Dance Institute, C-39, Block C, Sector 52, Noida."
+                            showRule={false}
                         />
 
                         {/* Contact channels */}
                         <RevealGroup className="mt-9">
-                            {channels.map((channel) => (
+                            {channels.map((channel, index) => (
                                 <RevealItem key={channel.href}>
                                     <a
                                         href={channel.href}
                                         {...(channel.external
                                             ? { target: "_blank", rel: "noopener noreferrer" }
                                             : {})}
-                                        className="group grid grid-cols-[2.75rem_1fr_auto] items-center gap-x-4 border-t border-rule py-5 transition-colors duration-200 hover:border-[#d9c4d0] sm:gap-x-6 sm:py-6"
+                                        className={`group grid grid-cols-[2.75rem_1fr_auto] items-center gap-x-4 border-rule py-5 transition-colors duration-200 hover:border-[#d9c4d0] sm:gap-x-6 sm:py-6 ${index === 0 ? "border-t-0" : "border-t"}`}
                                     >
                                         <span
                                             aria-hidden="true"
@@ -120,10 +121,6 @@ export default function ContactSection() {
 
                             <RevealItem className="border-t border-rule pt-7">
                                 <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <p className="max-w-[26rem] text-[13.5px] leading-relaxed text-muted">
-                                        Use the map to plan your visit. For class and
-                                        schedule questions, send us an enquiry.
-                                    </p>
                                     <a
                                         href="#enquiry"
                                         className="group inline-flex items-center gap-2 rounded-[11px] bg-rose px-6 py-3.5 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-pink"
