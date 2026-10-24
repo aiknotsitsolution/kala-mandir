@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Heart, Music, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import SectionHeading from "@/components/SectionHeading";
 import SmartImage from "@/components/SmartImage";
@@ -9,7 +9,12 @@ import SplitText from "@/components/SplitText";
 import BrushStroke from "@/components/BrushStroke";
 import GalleryLightbox, { ZoomCue } from "@/components/GalleryLightbox";
 import { Reveal, RevealGroup } from "@/components/Reveal";
-import { galleryCategories, galleryItems } from "@/data/gallery";
+import {
+    editorialImages,
+    galleryCategories,
+    galleryItems,
+    instagramPosts,
+} from "@/data/gallery";
 import { cn } from "@/lib/utils";
 import { ease } from "@/lib/motion";
 
@@ -28,6 +33,12 @@ const ACCENTS = {
         dot: "bg-text",
         hover: "hover:text-text",
         text: "text-text",
+    },
+    art: {
+        solid: "bg-rose text-white",
+        dot: "bg-rose",
+        hover: "hover:text-rose",
+        text: "text-rose",
     },
     drawing: {
         solid: "bg-rose text-white",
@@ -61,21 +72,63 @@ const CROPS = {
     landscape: "aspect-[4/3]",
 };
 
+const danceShowcase = editorialImages.danceShowcase;
+const danceGalleryItems = [
+    { image: danceShowcase.wide, styles: [] },
+    { image: danceShowcase.group, styles: ["kids", "bollywood"] },
+    { image: danceShowcase.zumba, styles: ["freestyle", "contemporary"] },
+    { image: danceShowcase.wedding, styles: ["wedding", "couple"] },
+    { image: danceShowcase.duo, styles: ["couple", "bollywood"] },
+    { image: instagramPosts[2], styles: ["bollywood", "freestyle", "contemporary"] },
+    { image: instagramPosts[3], styles: ["kids", "contemporary"] },
+].map(({ image, styles }, index) => ({
+    ...image,
+    id: `dance-gallery-${index}`,
+    category: "dance",
+    danceStyles: styles,
+    caption: image.caption || image.alt,
+}));
+
+const danceCategories = [
+    { id: "wedding", label: "Wedding Dance", icon: Users },
+    { id: "couple", label: "Couple Dance", icon: Users },
+    { id: "bollywood", label: "Bollywood", icon: Heart },
+    { id: "freestyle", label: "Freestyle", icon: Music },
+    { id: "kids", label: "Kids Dance", icon: Users },
+    { id: "contemporary", label: "Contemporary", icon: Users },
+];
+
 export default function ArtGallery({ artOnly = false }) {
-    const [active, setActive] = useState("all");
+    const [activeMain, setActiveMain] = useState("all");
+    const [activeArtCategory, setActiveArtCategory] = useState("all");
+    const [activeDanceCategory, setActiveDanceCategory] = useState("all");
     const [openIndex, setOpenIndex] = useState(null);
     const reduce = useReducedMotion();
     const visibleItems = useMemo(
-        () => artOnly ? galleryItems.filter((item) => item.category !== "dance") : galleryItems,
+        () => {
+            const artItems = galleryItems.filter((item) => item.category !== "dance");
+            return artOnly ? artItems : [...artItems, ...danceGalleryItems];
+        },
         [artOnly],
     );
 
     const filtered = useMemo(
-        () =>
-            active === "all"
-                ? visibleItems
-                : visibleItems.filter((item) => item.category === active),
-        [active, visibleItems],
+        () => {
+            if (activeMain === "dance") {
+                const danceItems = visibleItems.filter((item) => item.category === "dance");
+                return activeDanceCategory === "all"
+                    ? danceItems
+                    : danceItems.filter((item) => item.danceStyles?.includes(activeDanceCategory));
+            }
+            if (activeMain === "art") {
+                const artItems = visibleItems.filter((item) => item.category !== "dance");
+                return activeArtCategory === "all"
+                    ? artItems
+                    : artItems.filter((item) => item.category === activeArtCategory);
+            }
+            return visibleItems;
+        },
+        [activeArtCategory, activeDanceCategory, activeMain, visibleItems],
     );
 
     return (
@@ -85,6 +138,33 @@ export default function ArtGallery({ artOnly = false }) {
             aria-labelledby="gallery-title"
             className="section relative bg-blossom"
         >
+            <div
+                data-tone="dark"
+                className="relative isolate flex min-h-[22rem] items-center overflow-hidden bg-plum sm:min-h-[28rem] lg:min-h-[32rem]"
+            >
+                <SmartImage
+                    image={danceShowcase.wide}
+                    sizes="100vw"
+                    className="absolute inset-0 h-full w-full"
+                    position="50% 42%"
+                    priority
+                />
+                <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-r from-charcoal/85 via-plum/55 to-plum/15"
+                />
+                <div className="shell relative z-10 py-20">
+                    <p className="eyebrow text-gold">Kala Mandir · Art & Dance</p>
+                    <h1 className="mt-4 max-w-3xl font-display text-[clamp(2.8rem,7vw,5.5rem)] leading-[1.02] text-cream">
+                        Student{" "}
+                        <span className="italic text-pink">Gallery</span>
+                    </h1>
+                    <p className="mt-5 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
+                        Explore the artwork and dance moments created in our studio.
+                    </p>
+                </div>
+            </div>
+
             {/* Decorative corner paint-swatch — quiet, aria-hidden */}
             <div
                 aria-hidden="true"
@@ -99,8 +179,8 @@ export default function ArtGallery({ artOnly = false }) {
             </div>
 
             <div className="shell">
-                {/* Header + filters */}
-                <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+                {/* Header */}
+                <div className="flex flex-col gap-8">
                     <SectionHeading
                         id="gallery-title"
                         number="04"
@@ -122,49 +202,150 @@ export default function ArtGallery({ artOnly = false }) {
                         standfirst={
                             artOnly
                                 ? "Explore student drawings, paintings and craft projects from Kala Mandir. Each piece reflects a different way of looking closely, working with colour and making something by hand."
-                                : "A curated wall of actual student work from Kala Mandir — drawing, painting, craft and dance — presented the way a gallery would hang it."
+                                : "Browse student artwork and dance photography from Kala Mandir classes."
                         }
                         className="max-w-[38rem]"
                     >
                         <BrushStroke className="mt-7 h-4 w-56 text-pink/70" />
                     </SectionHeading>
 
-                    <Reveal delay={0.1} className="lg:pb-1">
-                        <div
-                            role="group"
-                            aria-label="Filter gallery by category"
-                            className="flex flex-wrap gap-2"
-                        >
-                            {galleryCategories.map((category) => {
-                                const isActive = active === category.id;
-                                const accent = ACCENTS[category.id];
-                                return (
-                                    <button
-                                        key={category.id}
-                                        type="button"
-                                        onClick={() => setActive(category.id)}
-                                        aria-pressed={isActive}
-                                        className={cn(
-                                            "rounded-full border px-4 py-2 text-[13px] tracking-[0.01em] transition-all duration-200",
-                                            isActive
-                                                ? cn("border-transparent", accent.solid)
-                                                : cn(
-                                                      "border-rule bg-transparent text-muted hover:bg-white hover:text-text",
-                                                      accent.hover,
-                                                  ),
-                                        )}
-                                    >
-                                        {category.label}
-                                        <span className="ml-1.5 tabular-nums text-[11px] opacity-60">
-                                            {category.id === "all"
-                                                ? visibleItems.length
-                                                : visibleItems.filter(
-                                                      (i) => i.category === category.id,
-                                                  ).length}
-                                        </span>
-                                    </button>
-                                );
-                            })}
+                    <Reveal delay={0.1}>
+                        <div className="flex flex-col gap-4">
+                            <div
+                                role="group"
+                                aria-label="Choose gallery collection"
+                                className="flex flex-wrap gap-2"
+                            >
+                                {[
+                                    { id: "all", label: "All Photos" },
+                                    { id: "art", label: "Art" },
+                                    ...(!artOnly ? [{ id: "dance", label: "Dance" }] : []),
+                                ].map((category) => {
+                                    const isActive = activeMain === category.id;
+                                    const accent = ACCENTS[category.id] || ACCENTS.all;
+                                    const count = visibleItems.filter((item) => (
+                                        category.id === "all"
+                                            ? true
+                                            : category.id === "art"
+                                              ? item.category !== "dance"
+                                              : item.category === "dance"
+                                    )).length;
+
+                                    return (
+                                        <button
+                                            key={category.id}
+                                            type="button"
+                                            onClick={() => {
+                                                setActiveMain(category.id);
+                                                setActiveArtCategory("all");
+                                                setActiveDanceCategory("all");
+                                                setOpenIndex(null);
+                                            }}
+                                            aria-pressed={isActive}
+                                            className={cn(
+                                                "rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200",
+                                                isActive
+                                                    ? cn("border-transparent", accent.solid)
+                                                    : cn(
+                                                          "border-rule bg-white/70 text-muted hover:bg-white hover:text-text",
+                                                          accent.hover,
+                                                      ),
+                                            )}
+                                        >
+                                            {category.label}
+                                            <span className="ml-1.5 tabular-nums text-[11px] opacity-70">
+                                                {count}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {activeMain === "art" && (
+                                <div
+                                    role="group"
+                                    aria-label="Filter art photos by category"
+                                    className="flex flex-wrap gap-2 pl-2"
+                                >
+                                    {galleryCategories.map((category) => {
+                                        const isActive = activeArtCategory === category.id;
+                                        const accent = ACCENTS[category.id] || ACCENTS.all;
+                                        const count = visibleItems.filter((item) => (
+                                            item.category !== "dance" &&
+                                            (category.id === "all" || item.category === category.id)
+                                        )).length;
+
+                                        return (
+                                            <button
+                                                key={category.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setActiveArtCategory(category.id);
+                                                    setOpenIndex(null);
+                                                }}
+                                                aria-pressed={isActive}
+                                                className={cn(
+                                                    "rounded-full border px-4 py-2 text-[13px] transition-all duration-200",
+                                                    isActive
+                                                        ? cn("border-transparent", accent.solid)
+                                                        : cn(
+                                                              "border-rule bg-transparent text-muted hover:bg-white hover:text-text",
+                                                              accent.hover,
+                                                          ),
+                                                )}
+                                            >
+                                                {category.label}
+                                                <span className="ml-1.5 tabular-nums text-[11px] opacity-60">
+                                                    {count}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {activeMain === "dance" && (
+                                <div
+                                    role="group"
+                                    aria-label="Filter dance photos by class"
+                                    className="flex flex-wrap gap-2 pl-2"
+                                >
+                                    {[
+                                        { id: "all", label: "All Dance", icon: Music },
+                                        ...danceCategories,
+                                    ].map(({ id, label, icon: Icon }) => {
+                                        const isActive = activeDanceCategory === id;
+                                        const count = visibleItems.filter((item) => (
+                                            item.category === "dance" &&
+                                            (id === "all" || item.danceStyles?.includes(id))
+                                        )).length;
+
+                                        return (
+                                            <button
+                                                key={id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setActiveDanceCategory(id);
+                                                    setOpenIndex(null);
+                                                }}
+                                                aria-pressed={isActive}
+                                                className={cn(
+                                                    "inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] transition-all duration-200",
+                                                    isActive
+                                                        ? "border-transparent bg-flame text-white"
+                                                        : "border-rule bg-transparent text-muted hover:bg-white hover:text-flame",
+                                                )}
+                                            >
+                                                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                                                {label}
+                                                <span className="ml-0.5 tabular-nums text-[11px] opacity-70">
+                                                    {count}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
                     </Reveal>
                 </div>
@@ -177,9 +358,9 @@ export default function ArtGallery({ artOnly = false }) {
                             className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-pink motion-safe:animate-pulse"
                         />
                         <span className="max-w-[54rem]">
-                            Every piece on this wall is{" "}
+                            The photos and student work shown here are{" "}
                             <span className="font-medium text-text">
-                                actual student work from Kala Mandir classes
+                                from Kala Mandir classes
                             </span>
                             , supplied by the institute.
                         </span>
@@ -318,7 +499,11 @@ export default function ArtGallery({ artOnly = false }) {
                         </p>
                         <button
                             type="button"
-                            onClick={() => setActive("all")}
+                            onClick={() => {
+                                setActiveMain("all");
+                                setActiveArtCategory("all");
+                                setActiveDanceCategory("all");
+                            }}
                             className="rule-link mt-6 text-[15px] text-rose"
                         >
                             Show all work
