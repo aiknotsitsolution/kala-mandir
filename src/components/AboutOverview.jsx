@@ -27,12 +27,15 @@ export default function AboutOverview() {
             className="section relative bg-paper"
         >
             <div className="shell">
-                <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
-                    <MediaMask className="lg:col-span-5">
+                <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:items-stretch lg:gap-16">
+                    <MediaMask
+                        className="lg:col-span-5 lg:h-full"
+                        innerClassName="lg:h-full"
+                    >
                         <SmartImage
                             image={editorialImages.intro.side}
                             sizes="(max-width: 1023px) 92vw, 40vw"
-                            className="aspect-[4/3] w-full rounded-[18px] lg:aspect-[4/5]"
+                            className="aspect-[4/3] w-full rounded-[18px] lg:h-full lg:aspect-auto"
                             position="50% 45%"
                         />
                     </MediaMask>
