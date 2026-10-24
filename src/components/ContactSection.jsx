@@ -56,7 +56,7 @@ export default function ContactSection() {
             id="contact"
             data-tone="light"
             aria-labelledby="contact-title"
-            className="section relative bg-paper"
+            className="section relative bg-paper pt-12 lg:pt-16"
         >
             <div className="shell">
                 <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:items-start lg:gap-x-12">

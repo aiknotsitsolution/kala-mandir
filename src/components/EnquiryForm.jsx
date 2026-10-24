@@ -212,7 +212,7 @@ export default function EnquiryForm() {
             id="enquiry"
             data-tone="light"
             aria-labelledby="enquiry-title"
-            className="section relative bg-white"
+            className="section relative bg-white pb-12 lg:pb-16"
         >
             <div className="shell">
                 <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:gap-x-14">

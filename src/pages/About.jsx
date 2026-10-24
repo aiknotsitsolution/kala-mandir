@@ -1,10 +1,12 @@
-import IntroSection from "@/components/IntroSection";
+import AboutOverview from "@/components/AboutOverview";
+import AboutStudioSection from "@/components/AboutStudioSection";
 import WhyLearnHere from "@/components/WhyLearnHere";
 
 export default function About() {
     return (
         <main id="main" className="about-page">
-            <IntroSection showStudioNote={false} />
+            <AboutOverview />
+            <AboutStudioSection />
             <WhyLearnHere />
         </main>
     );

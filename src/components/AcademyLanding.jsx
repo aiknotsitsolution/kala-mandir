@@ -1,6 +1,16 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { ArrowUpRight, Music, Users, Heart, Palette, Brush, Camera } from "lucide-react";
+import {
+  ArrowUpRight,
+  Camera,
+  Brush,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Music,
+  Palette,
+  Users,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import SmartImage from "@/components/SmartImage";
 import ArtBackdrop from "@/components/Artbackdrop";
@@ -32,6 +42,8 @@ const ART_CLASSES = [
 export default function AcademyLanding({ academy = "dance" }) {
   const isArtAcademy = academy === "art";
   const ref = useRef(null);
+  const danceGalleryRef = useRef(null);
+  const [galleryPosition, setGalleryPosition] = useState({ atStart: true, atEnd: false });
   const reduce = useReducedMotion();
   const isDesktop = useIsDesktop();
   const parallax = isDesktop && !reduce;
@@ -54,6 +66,41 @@ export default function AcademyLanding({ academy = "dance" }) {
     ...editorialImages.artDetail,
     ...studioLife.filter((photo) => photo.tag !== "Zumba"),
   ];
+
+  useEffect(() => {
+    const gallery = danceGalleryRef.current;
+    if (!gallery) return;
+
+    const updatePosition = () => {
+      const atStart = gallery.scrollLeft <= 1;
+      const atEnd = gallery.scrollLeft + gallery.clientWidth >= gallery.scrollWidth - 1;
+      setGalleryPosition((position) => {
+        if (position.atStart === atStart && position.atEnd === atEnd) return position;
+        return { atStart, atEnd };
+      });
+    };
+
+    updatePosition();
+    gallery.addEventListener("scroll", updatePosition, { passive: true });
+    window.addEventListener("resize", updatePosition);
+
+    return () => {
+      gallery.removeEventListener("scroll", updatePosition);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [danceGallery.length]);
+
+  const moveDanceGallery = (direction) => {
+    const gallery = danceGalleryRef.current;
+    const firstPhoto = gallery?.firstElementChild;
+    const secondPhoto = firstPhoto?.nextElementSibling;
+    if (!gallery || !firstPhoto) return;
+
+    const step = secondPhoto
+      ? secondPhoto.offsetLeft - firstPhoto.offsetLeft
+      : firstPhoto.getBoundingClientRect().width;
+    gallery.scrollBy({ left: direction * step, behavior: "smooth" });
+  };
 
   return (
     <div className="bg-[#fdf6f8] text-[#3d1f2d]">
@@ -180,20 +227,52 @@ export default function AcademyLanding({ academy = "dance" }) {
 
           {/* Dance Gallery */}
           <div className="mb-8">
-            <h3 className="text-2xl font-display mb-6 text-center">Our Student Dance</h3>
-            <div className="columns-2 gap-4 md:columns-3 lg:columns-5">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <h3 className="text-2xl font-display">Our Student Dance</h3>
+              <div className="flex shrink-0 gap-2">
+                <button
+                  type="button"
+                  aria-label="Previous student dance photos"
+                  aria-controls="student-dance-gallery"
+                  disabled={galleryPosition.atStart}
+                  onClick={() => moveDanceGallery(-1)}
+                  className="grid h-10 w-10 place-items-center rounded-full border border-[#e8c4d0] bg-white text-[#7a4a5c] transition hover:border-[#c45c7a] hover:text-[#c45c7a] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next student dance photos"
+                  aria-controls="student-dance-gallery"
+                  disabled={galleryPosition.atEnd}
+                  onClick={() => moveDanceGallery(1)}
+                  className="grid h-10 w-10 place-items-center rounded-full border border-[#e8c4d0] bg-white text-[#7a4a5c] transition hover:border-[#c45c7a] hover:text-[#c45c7a] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+            <div
+              id="student-dance-gallery"
+              ref={danceGalleryRef}
+              role="region"
+              aria-label="Student dance photos"
+              className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
               {danceGallery.map((img) => (
-                  <figure
-                    key={img.id}
-                    className="mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-[#f3d6e0] bg-white shadow-md sm:mb-5"
-                  >
-                    <SmartImage
-                      image={img}
-                      sizes="(max-width: 767px) 50vw, 20vw"
-                      className="w-full"
-                      imgClassName="transition-transform duration-500 hover:scale-105"
-                    />
-                  </figure>
+                <figure
+                  key={img.id}
+                  className="w-[82%] shrink-0 snap-start overflow-hidden rounded-2xl border border-[#f3d6e0] bg-white shadow-md sm:w-[46%] lg:w-[31%]"
+                >
+                  <SmartImage
+                    image={img}
+                    width={4}
+                    height={3}
+                    sizes="(max-width: 639px) 82vw, (max-width: 1023px) 46vw, 31vw"
+                    className="w-full"
+                    imgClassName="transition-transform duration-500 hover:scale-105"
+                  />
+                </figure>
               ))}
             </div>
           </div>
