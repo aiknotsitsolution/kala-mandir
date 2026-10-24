@@ -1,3 +1,6 @@
+
+
+
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight, Heart, Music, Users } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -11,7 +14,6 @@ const DANCE_CLASSES = [
   { icon: Music, title: "Freestyle" },
   { icon: Users, title: "Kids Dance" },
   { icon: Users, title: "Contemporary" },
-  
 ];
 
 const danceShowcase = editorialImages.danceShowcase;
@@ -80,6 +82,7 @@ export default function DanceAcademy() {
   return (
     <div className="bg-[#fdf6f8] text-[#3d1f2d]">
       <section id="dance" className="relative overflow-hidden">
+        {/* ========== FULL-WIDTH HERO WITH CAROUSEL CONTROLS ========== */}
         <div
           data-tone="dark"
           aria-roledescription="carousel"
@@ -99,6 +102,8 @@ export default function DanceAcademy() {
             aria-hidden="true"
             className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"
           />
+
+          {/* Centered content + controls */}
           <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
             <p className="mb-3 text-sm uppercase tracking-[0.25em] text-gold">
               Dance Academy
@@ -106,9 +111,53 @@ export default function DanceAcademy() {
             <h1 className="font-display text-5xl font-medium text-cream md:text-6xl lg:text-7xl">
               Grace in Every Move
             </h1>
+
+            {/* Carousel controls – middle center */}
+            <div className="mt-10 flex items-center gap-3">
+              <button
+                type="button"
+                aria-label="Previous Dance Academy photo"
+                onClick={() =>
+                  setHeroIndex(
+                    (index) =>
+                      (index - 1 + danceHeroImages.length) % danceHeroImages.length
+                  )
+                }
+                className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-black/40 text-white transition hover:bg-white/20"
+              >
+                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+              </button>
+
+              {danceHeroImages.map((image, index) => (
+                <button
+                  key={image.src}
+                  type="button"
+                  aria-label={`Show Dance Academy photo ${index + 1}`}
+                  aria-current={index === heroIndex ? "true" : undefined}
+                  onClick={() => setHeroIndex(index)}
+                  className={`h-2.5 rounded-full transition-all ${
+                    index === heroIndex
+                      ? "w-7 bg-white"
+                      : "w-2.5 bg-white/55 hover:bg-white/80"
+                  }`}
+                />
+              ))}
+
+              <button
+                type="button"
+                aria-label="Next Dance Academy photo"
+                onClick={() =>
+                  setHeroIndex((index) => (index + 1) % danceHeroImages.length)
+                }
+                className="grid h-10 w-10 place-items-center rounded-full border border-white/50 bg-black/40 text-white transition hover:bg-white/20"
+              >
+                <ChevronRight className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* ========== REST OF THE CONTENT ========== */}
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="mb-14 text-center">
             <h2 className="mb-3 font-display text-3xl">Our Dance Classes</h2>
@@ -166,10 +215,22 @@ export default function DanceAcademy() {
               <div className="rounded-2xl border border-[#f3d6e0] bg-white p-6 shadow-sm">
                 <h3 className="mb-4 font-medium text-[#c45c7a]">Class Details</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><p className="text-[#9a6a7a]">Age Group</p><p className="font-medium">4 years onwards</p></div>
-                  <div><p className="text-[#9a6a7a]">Class Timing</p><p className="font-medium">Flexible slots</p></div>
-                  <div><p className="text-[#9a6a7a]">Batch Size</p><p className="font-medium">8–12 students</p></div>
-                  <div><p className="text-[#9a6a7a]">Duration</p><p className="font-medium">1 hour per class</p></div>
+                  <div>
+                    <p className="text-[#9a6a7a]">Age Group</p>
+                    <p className="font-medium">4 years onwards</p>
+                  </div>
+                  <div>
+                    <p className="text-[#9a6a7a]">Class Timing</p>
+                    <p className="font-medium">Flexible slots</p>
+                  </div>
+                  <div>
+                    <p className="text-[#9a6a7a]">Batch Size</p>
+                    <p className="font-medium">8–12 students</p>
+                  </div>
+                  <div>
+                    <p className="text-[#9a6a7a]">Duration</p>
+                    <p className="font-medium">1 hour per class</p>
+                  </div>
                 </div>
                 <Link
                   to="/contact#enquiry"
