@@ -60,7 +60,12 @@ export default function AboutOverview() {
                                 explore different forms of creative expression in a
                                 welcoming studio. Classes focus on learning the
                                 fundamentals, practising regularly and developing
-                                each piece at an individual pace.
+                                each piece at an individual pace. Our trainers
+                                bring more than{" "}
+                                <strong className="font-semibold text-rose">
+                                    16 years of experience
+                                </strong>
+                                .
                             </p>
                         </Reveal>
 
