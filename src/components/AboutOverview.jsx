@@ -33,7 +33,7 @@ export default function AboutOverview() {
                         innerClassName="lg:h-full"
                     >
                         <SmartImage
-                            image={editorialImages.intro.side}
+                            image={editorialImages.aboutOverview}
                             sizes="(max-width: 1023px) 92vw, 40vw"
                             className="aspect-[4/3] w-full rounded-[18px] lg:h-full lg:aspect-auto"
                             position="50% 45%"

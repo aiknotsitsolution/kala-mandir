@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Heart, Music, Users } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -104,32 +104,19 @@ export default function ArtGallery({ artOnly = false }) {
     const [activeDanceCategory, setActiveDanceCategory] = useState("all");
     const [openIndex, setOpenIndex] = useState(null);
     const reduce = useReducedMotion();
-    const visibleItems = useMemo(
-        () => {
-            const artItems = galleryItems.filter((item) => item.category !== "dance");
-            return artOnly ? artItems : [...artItems, ...danceGalleryItems];
-        },
-        [artOnly],
-    );
-
-    const filtered = useMemo(
-        () => {
-            if (activeMain === "dance") {
-                const danceItems = visibleItems.filter((item) => item.category === "dance");
-                return activeDanceCategory === "all"
-                    ? danceItems
-                    : danceItems.filter((item) => item.danceStyles?.includes(activeDanceCategory));
-            }
-            if (activeMain === "art") {
-                const artItems = visibleItems.filter((item) => item.category !== "dance");
-                return activeArtCategory === "all"
-                    ? artItems
-                    : artItems.filter((item) => item.category === activeArtCategory);
-            }
-            return visibleItems;
-        },
-        [activeArtCategory, activeDanceCategory, activeMain, visibleItems],
-    );
+    const artItems = galleryItems.filter((item) => item.category !== "dance");
+    const visibleItems = artOnly ? artItems : [...artItems, ...danceGalleryItems];
+    const danceItems = visibleItems.filter((item) => item.category === "dance");
+    const filtered =
+        activeMain === "dance"
+            ? activeDanceCategory === "all"
+                ? danceItems
+                : danceItems.filter((item) => item.danceStyles?.includes(activeDanceCategory))
+            : activeMain === "art"
+              ? activeArtCategory === "all"
+                  ? artItems
+                  : artItems.filter((item) => item.category === activeArtCategory)
+              : visibleItems;
 
     return (
         <section

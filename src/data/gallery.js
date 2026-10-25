@@ -349,6 +349,12 @@ export const instagramPosts = [    {
  * latest-works strip and km-artwork-02 hangs in the gallery.
  */
 export const editorialImages = {
+    aboutOverview: {
+        src: "/assets/institute/trainer-award.jpeg",
+        alt: "A Kala Mandir dancer receiving an award from Kathak maestro Pandit Birju Maharaj",
+        width: 610,
+        height: 448,
+    },
     intro: {
         main: {
             src: "/assets/institute/km-place-14.webp",
