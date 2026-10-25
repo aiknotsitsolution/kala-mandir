@@ -545,7 +545,11 @@ const CLASS_FORMATS = [
     label: "For young movers",
     title: "Kids batches",
     detail: "Dance classes for children aged 3 years and onwards.",
-    note: "Separate kids batches",
+    notes: [
+      "Children aged 3 years onwards",
+      "Separate kids batch",
+      "Maximum 4 students per batch",
+    ],
   },
   {
     number: "02",
@@ -553,23 +557,19 @@ const CLASS_FORMATS = [
     label: "Make time for you",
     title: "Adult batches",
     detail: "Welcoming dance classes for adults aged 16 to 70.",
-    note: "Separate adult batches",
+    notes: [
+      "Adults aged 16 to 70",
+      "Separate adult batch",
+      "Maximum 4 students per batch",
+    ],
   },
   {
     number: "03",
-    icon: Users,
-    label: "Small by design",
-    title: "Small-group classes",
-    detail: "Get more room to practise and personal guidance in every class.",
-    note: "Maximum 4 students per batch",
-  },
-  {
-    number: "04",
     icon: User,
     label: "A little extra focus",
     title: "One-to-one sessions",
     detail: "A special personal session shaped around your goals and pace.",
-    note: "Individual attention",
+    notes: ["Individual attention"],
   },
 ];
 
@@ -904,12 +904,12 @@ export default function DanceAcademy() {
                 Class <span className="italic">details</span>
               </h2>
               <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-[#7a4a5c]">
-                Choose a separate kids or adults batch, join a small group, or
-                ask us about a special one-to-one session.
+                Choose a separate small batch for kids or adults, or ask us
+                about a special one-to-one session.
               </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {CLASS_FORMATS.map((format, i) => (
                 <article
                   key={format.number}
@@ -942,10 +942,20 @@ export default function DanceAcademy() {
                   </p>
                   
                   <div className="relative mt-5 border-t border-[#f3d6e0] pt-4">
-                    <p className="flex items-start gap-2 text-sm font-medium text-[#5a3a4a]">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#c45c7a]" aria-hidden="true" />
-                      {format.note}
-                    </p>
+                    <ul className="space-y-3">
+                      {format.notes.map((note) => (
+                        <li
+                          key={note}
+                          className="flex items-start gap-2.5 text-sm font-medium text-[#5a3a4a]"
+                        >
+                          <Check
+                            className="mt-0.5 h-4 w-4 shrink-0 text-[#c45c7a]"
+                            aria-hidden="true"
+                          />
+                          <span>{note}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                   
                   <Link
