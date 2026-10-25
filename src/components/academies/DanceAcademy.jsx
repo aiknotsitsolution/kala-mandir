@@ -529,6 +529,11 @@ const DANCE_CLASSES = [
     title: "Contemporary",
     description: "Discover expressive movement, flow and musicality.",
   },
+  {
+    icon: Sparkles,
+    title: "Classical Dance",
+    description: "Explore graceful movement, rhythm and expressive storytelling.",
+  },
 ];
 
 const DANCE_BENEFITS = [
@@ -796,9 +801,9 @@ export default function DanceAcademy() {
               Find a style that <span className="italic">moves you.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-[#7a4a5c]">
-              Learn a routine for a special day, enjoy music with your child or
-              simply make time to move. Start with the style that feels right
-              for you.
+              Explore classical dance, learn a routine for a special day, enjoy
+              music with your child or simply make time to move. Start with the
+              style that feels right for you.
             </p>
           </div>
 
