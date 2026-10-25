@@ -89,6 +89,27 @@ const danceGalleryItems = [
     caption: image.caption || image.alt,
 }));
 
+const danceVideos = [
+    {
+        id: "dance-video-couple",
+        type: "video",
+        src: "/assets/video/CoupleDance.mp4",
+        alt: "Couple dance class video",
+        caption: "Couple Dance",
+        category: "dance",
+        danceStyles: ["couple"],
+    },
+    {
+        id: "dance-video-wedding",
+        type: "video",
+        src: "/assets/video/coupleDancewedding.mp4",
+        alt: "Wedding couple dance video",
+        caption: "Wedding Dance",
+        category: "dance",
+        danceStyles: ["wedding", "couple"],
+    },
+];
+
 const danceCategories = [
     { id: "wedding", label: "Wedding Dance", icon: Users },
     { id: "couple", label: "Couple Dance", icon: Users },
@@ -105,7 +126,9 @@ export default function ArtGallery({ artOnly = false }) {
     const [openIndex, setOpenIndex] = useState(null);
     const reduce = useReducedMotion();
     const artItems = galleryItems.filter((item) => item.category !== "dance");
-    const visibleItems = artOnly ? artItems : [...artItems, ...danceGalleryItems];
+    const visibleItems = artOnly
+        ? artItems
+        : [...artItems, ...danceGalleryItems, ...danceVideos];
     const danceItems = visibleItems.filter((item) => item.category === "dance");
     const filtered =
         activeMain === "dance"
@@ -117,6 +140,7 @@ export default function ArtGallery({ artOnly = false }) {
                   ? artItems
                   : artItems.filter((item) => item.category === activeArtCategory)
               : visibleItems;
+    const lightboxItems = filtered.filter((item) => item.type !== "video");
 
     return (
         <section
@@ -189,7 +213,7 @@ export default function ArtGallery({ artOnly = false }) {
                         standfirst={
                             artOnly
                                 ? "Explore student drawings, paintings and craft projects from Kala Mandir. Each piece reflects a different way of looking closely, working with colour and making something by hand."
-                                : "Browse student artwork and dance photography from Kala Mandir classes."
+                                : "Browse student artwork, dance photography and videos from Kala Mandir classes."
                         }
                         className="max-w-[38rem]"
                     >
@@ -345,7 +369,7 @@ export default function ArtGallery({ artOnly = false }) {
                             className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-pink motion-safe:animate-pulse"
                         />
                         <span className="max-w-[54rem]">
-                            The photos and student work shown here are{" "}
+                            The photos, videos and student work shown here are{" "}
                             <span className="font-medium text-text">
                                 from Kala Mandir classes
                             </span>
@@ -377,40 +401,51 @@ export default function ArtGallery({ artOnly = false }) {
                                     transition={{ duration: 0.45, ease }}
                                     className="group mb-5 break-inside-avoid lg:mb-6"
                                 >
-                                    <button
-                                        type="button"
-                                        onClick={() => setOpenIndex(filtered.indexOf(item))}
-                                        className="relative block w-full overflow-hidden rounded-[14px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink focus-visible:ring-offset-2 focus-visible:ring-offset-blossom"
-                                        aria-label={`Open in gallery: ${item.caption}`}
-                                    >
-                                        <SmartImage
-                                            image={item}
-                                            sizes="(max-width: 639px) 92vw, (max-width: 1023px) 46vw, 30vw"
-                                            className={cn("tile-lift w-full", CROPS[item.crop] || "aspect-[4/5]")}
-                                            position={item.position || "50% 45%"}
-                                            imgClassName="transition-transform duration-[650ms] ease-out group-hover:scale-[1.05] motion-reduce:transform-none"
+                                    {item.type === "video" ? (
+                                        <video
+                                            src={item.src}
+                                            aria-label={item.alt}
+                                            controls
+                                            playsInline
+                                            preload="metadata"
+                                            className="tile-lift aspect-[4/5] w-full rounded-[14px] bg-plum object-cover"
                                         />
-                                        <ZoomCue />
-                                        {/* Caption overlay — appears on hover/focus only,
-                                            the caption also exists as real text below. */}
-                                        <span
-                                            aria-hidden="true"
-                                            className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/70 via-black/25 to-transparent px-4 pb-4 pt-14 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => setOpenIndex(lightboxItems.indexOf(item))}
+                                            className="relative block w-full overflow-hidden rounded-[14px] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink focus-visible:ring-offset-2 focus-visible:ring-offset-blossom"
+                                            aria-label={`Open in gallery: ${item.caption}`}
                                         >
-                                            <span className="text-[13.5px] font-medium text-white">
-                                                {item.caption}
+                                            <SmartImage
+                                                image={item}
+                                                sizes="(max-width: 639px) 92vw, (max-width: 1023px) 46vw, 30vw"
+                                                className={cn("tile-lift w-full", CROPS[item.crop] || "aspect-[4/5]")}
+                                                position={item.position || "50% 45%"}
+                                                imgClassName="transition-transform duration-[650ms] ease-out group-hover:scale-[1.05] motion-reduce:transform-none"
+                                            />
+                                            <ZoomCue />
+                                            {/* Caption overlay — appears on hover/focus only,
+                                                the caption also exists as real text below. */}
+                                            <span
+                                                aria-hidden="true"
+                                                className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/70 via-black/25 to-transparent px-4 pb-4 pt-14 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                            >
+                                                <span className="text-[13.5px] font-medium text-white">
+                                                    {item.caption}
+                                                </span>
+                                                <span className="eyebrow flex items-center gap-1.5 text-white/85">
+                                                    <span
+                                                        className={cn(
+                                                            "h-1.5 w-1.5 rounded-full",
+                                                            accent.dot,
+                                                        )}
+                                                    />
+                                                    {item.category}
+                                                </span>
                                             </span>
-                                            <span className="eyebrow flex items-center gap-1.5 text-white/85">
-                                                <span
-                                                    className={cn(
-                                                        "h-1.5 w-1.5 rounded-full",
-                                                        accent.dot,
-                                                    )}
-                                                />
-                                                {item.category}
-                                            </span>
-                                        </span>
-                                    </button>
+                                        </button>
+                                    )}
 
                                     {/* Always-visible caption for a11y + print feel */}
                                     <figcaption className="relative mt-3 flex items-baseline justify-between gap-4 border-t border-rule pt-2.5">
@@ -500,7 +535,7 @@ export default function ArtGallery({ artOnly = false }) {
             </div>
 
             <GalleryLightbox
-                items={filtered}
+                items={lightboxItems}
                 index={openIndex}
                 onClose={() => setOpenIndex(null)}
                 onNavigate={setOpenIndex}
