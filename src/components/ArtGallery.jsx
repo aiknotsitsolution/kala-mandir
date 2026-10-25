@@ -110,6 +110,7 @@ const danceVideos = [
     },
 ];
 
+
 const danceCategories = [
     { id: "wedding", label: "Wedding Dance", icon: Users },
     { id: "couple", label: "Couple Dance", icon: Users },
