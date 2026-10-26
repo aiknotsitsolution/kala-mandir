@@ -4,18 +4,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
     ArrowUpRight,
     CheckCircle2,
-    Copy,
     Loader2,
-    MessageSquare,
-    Phone,
+    MapPin,
     TriangleAlert,
 } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import { Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
-import { buildWhatsAppUrl, contactLinks, siteConfig } from "@/data/siteConfig";
+import { contactLinks, siteConfig } from "@/data/siteConfig";
 import { cn } from "@/lib/utils";
 import { postApi } from "@/lib/api";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -42,13 +42,6 @@ const AGE_GROUPS = [
     "Above 50",
 ];
 
-const METHODS = ["WhatsApp", "Phone call", "SMS"];
-const METHOD_ICONS = {
-    WhatsApp: WhatsAppIcon,
-    "Phone call": Phone,
-    SMS: MessageSquare,
-};
-
 const schema = z.object({
     name: z
         .string()
@@ -64,9 +57,6 @@ const schema = z.object({
         ),
     interest: z.string().min(1, "Please choose what you're interested in."),
     ageGroup: z.string().optional(),
-    method: z.enum(["WhatsApp", "Phone call", "SMS"], {
-        message: "Please choose how we should contact you.",
-    }),
     message: z
         .string()
         .trim()
@@ -86,21 +76,18 @@ const schema = z.object({
  *
  * States: idle → submitting → submitted | error.
  */
-export default function EnquiryForm() {
+export default function EnquiryForm({ mapLeft = false }) {
     const reduce = useReducedMotion();
     const { state: routeState } = useLocation();
     const mountedAt = useRef(Date.now());
-    const messageRef = useRef("");
 
-    const [status, setStatus] = useState("idle"); // idle | submitting | submitted | handed-off | blocked | error
-    const [copied, setCopied] = useState(false);
+    const [status, setStatus] = useState("idle"); // idle | submitting | submitted | saved-email-error | error
+    const [submitError, setSubmitError] = useState("");
 
     const {
         register,
         handleSubmit,
         setValue,
-        reset,
-        getValues,
         formState: { errors, isSubmitting },
     } = useForm({
         resolver: zodResolver(schema),
@@ -110,7 +97,6 @@ export default function EnquiryForm() {
             phone: "",
             interest: "",
             ageGroup: "",
-            method: "WhatsApp",
             message: "",
             company: "",
         },
@@ -133,38 +119,39 @@ export default function EnquiryForm() {
         return () => window.removeEventListener("km:interest", onInterest);
     }, [routeState, setValue]);
 
-    const composed = composeEnquiry(getValues());
+    const onInvalid = (formErrors) => {
+        setStatus("idle");
+        const firstError = Object.values(formErrors)[0];
+        toast.error(firstError?.message || "Please check the form and try again.");
+    };
 
     const onSubmit = async (values) => {
         // Spam guard: require a human amount of time on the form.
         if (Date.now() - mountedAt.current < siteConfig.enquiry.minFillMs) {
+            const message = "Please take a moment to review your enquiry before submitting.";
             setStatus("error");
+            setSubmitError(message);
+            toast.error(message);
             return;
         }
         // Honeypot tripped → silently drop, never show an error to the bot.
-        if (values.company) {
-            setStatus("handed-off");
-            return;
-        }
-
-        messageRef.current = composeEnquiry(values);
+        if (values.company) return;
 
         try {
             setStatus("submitting");
-            await postApi("/contact/enquiries", values);
+            setSubmitError("");
+            const result = await postApi("/contact/enquiries", values);
+            if (result?.emailSent === false) {
+                setStatus("saved-email-error");
+                toast.warning("Your enquiry was saved, but the email notification could not be sent.");
+                return;
+            }
             setStatus("submitted");
-        } catch {
+            toast.success("Your enquiry has been submitted successfully.");
+        } catch (error) {
             setStatus("error");
-        }
-    };
-
-    const copyMessage = async () => {
-        try {
-            await navigator.clipboard.writeText(messageRef.current || composed);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2200);
-        } catch {
-            setCopied(false);
+            setSubmitError(error.message);
+            toast.error(error.message || "Could not submit your enquiry. Please try again.");
         }
     };
 
@@ -178,26 +165,70 @@ export default function EnquiryForm() {
             className="section relative bg-white pb-12 lg:pb-16"
         >
             <div className="shell">
-                <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:gap-x-14">
+                <div className={`grid grid-cols-1 gap-y-12 lg:grid-cols-12 ${mapLeft ? "lg:gap-x-8" : "lg:gap-x-14"}`}>
                     {/* ── Left: heading + WhatsApp alternative ── */}
-                    <div className="lg:col-span-5">
-                        <SectionHeading
-                            id="enquiry-title"
-                            number="08"
-                            eyebrow="Trial class & enquiry"
-                            title={
-                                <>
-                                    Your creative journey{" "}
-                                    <span className="italic text-pink">
-                                        starts here
+                    <div className={mapLeft ? "lg:col-span-6" : "lg:col-span-5"}>
+                        {mapLeft ? (
+                            <div className="overflow-hidden rounded-[20px] border border-rule bg-white shadow-[0_24px_60px_-38px_rgba(41,33,43,0.4)]">
+                                <div className="flex items-center gap-4 p-5 sm:px-7 sm:py-6">
+                                    <span
+                                        aria-hidden="true"
+                                        className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-blossom text-rose"
+                                    >
+                                        <MapPin className="h-5 w-5" />
                                     </span>
-                                    .
-                                </>
-                            }
-                            standfirst="Tell us what you'd like to learn. We'll confirm availability, timing and everything else on WhatsApp."
-                        />
+                                    <div>
+                                        <p className="eyebrow text-rose">Visit the studio</p>
+                                        <h2
+                                            id="enquiry-title"
+                                            className="mt-1 font-display text-[1.5rem] leading-tight text-text sm:text-[1.75rem]"
+                                        >
+                                            Find us in Noida
+                                        </h2>
+                                        <p className="mt-1 text-sm text-muted">
+                                            C-39, Block C, Sector 52, Noida
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="relative h-[300px] overflow-hidden bg-blossom sm:h-[360px] lg:h-[460px]">
+                                    <iframe
+                                        title="Kala Mandir Art and Dance Institute location map"
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.436013791609!2d77.37030229999999!3d28.586693800000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5216ed51bf9%3A0x3b0c2a3c39d01ad8!2sKala%20Mandir%20Art%20and%20Dance%20Institute!5e0!3m2!1sen!2sin!4v1792840890097!5m2!1sen!2sin"
+                                        className="absolute inset-0 h-full w-full border-0"
+                                        allowFullScreen
+                                        loading="lazy"
+                                        referrerPolicy="strict-origin-when-cross-origin"
+                                    />
+                                </div>
+                                <a
+                                    href={contactLinks.map}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-6 py-4 text-sm font-medium text-rose transition-colors hover:text-pink"
+                                >
+                                    Get directions
+                                    <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+                                </a>
+                            </div>
+                        ) : (
+                            <>
+                                <SectionHeading
+                                    id="enquiry-title"
+                                    number="08"
+                                    eyebrow="Trial class & enquiry"
+                                    title={
+                                        <>
+                                            Your creative journey{" "}
+                                            <span className="italic text-pink">
+                                                starts here
+                                            </span>
+                                            .
+                                        </>
+                                    }
+                                    standfirst="Tell us what you'd like to learn. We'll confirm availability, timing and everything else on WhatsApp."
+                                />
 
-                        <Reveal delay={0.1} className="mt-9">
+                                <Reveal delay={0.1} className="mt-9">
                             {/* Obvious WhatsApp alternative */}
                             <a
                                 href={contactLinks.whatsapp}
@@ -248,14 +279,16 @@ export default function EnquiryForm() {
                                 to this enquiry. They are not used for unrelated
                                 purposes.
                             </p>
-                        </Reveal>
+                                </Reveal>
+                            </>
+                        )}
                     </div>
 
                     {/* ── Right: the form ── */}
-                    <div className="lg:col-span-6 lg:col-start-7">
+                    <div className={mapLeft ? "lg:col-span-6" : "lg:col-span-6 lg:col-start-7"}>
                         <Reveal delay={0.08}>
                             <form
-                                onSubmit={handleSubmit(onSubmit)}
+                                onSubmit={handleSubmit(onSubmit, onInvalid)}
                                 noValidate
                                 aria-describedby="form-note"
                                 className="rounded-[20px] border border-rule bg-white p-5 shadow-[0_24px_70px_-48px_rgba(53,21,54,0.32)] sm:p-7 lg:rounded-[24px] lg:p-9"
@@ -351,45 +384,6 @@ export default function EnquiryForm() {
                                         </select>
                                     </Field>
 
-                                    {/* Preferred contact method */}
-                                    <fieldset className="sm:col-span-2">
-                                        <legend className="eyebrow mb-3 text-muted">
-                                            Preferred contact method
-                                        </legend>
-                                        <div className="flex flex-wrap gap-2.5">
-                                            {METHODS.map((method) => {
-                                                const MethodIcon = METHOD_ICONS[method];
-                                                return (
-                                                    <label
-                                                        key={method}
-                                                        className={cn(
-                                                            "inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2.5 text-[14px] transition-all duration-200",
-                                                            "has-[:checked]:border-text has-[:checked]:bg-text has-[:checked]:text-paper",
-                                                            "border-rule text-muted hover:border-[#c9c2b5] hover:text-text",
-                                                        )}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            value={method}
-                                                            className="sr-only"
-                                                            {...register("method")}
-                                                        />
-                                                        <MethodIcon
-                                                            aria-hidden="true"
-                                                            className="h-4 w-4"
-                                                        />
-                                                        {method}
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                        {errors.method && (
-                                            <FieldError id="method-error">
-                                                {errors.method.message}
-                                            </FieldError>
-                                        )}
-                                    </fieldset>
-
                                     {/* Message (optional) */}
                                     <Field
                                         id="message"
@@ -430,78 +424,19 @@ export default function EnquiryForm() {
                                                 key="submitted"
                                                 tone="success"
                                                 title="Your enquiry has been received"
-                                                body="Thank you for contacting Kala Mandir. Your details have been saved and our team will get back to you."
+                                                body="Thank you for contacting Kala Mandir. Your enquiry has been saved, and an email notification has been sent to our team."
                                                 reduce={reduce}
-                                            >
-                                                <a
-                                                    href={buildWhatsAppUrl(messageRef.current || composed)}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="mt-4 inline-flex items-center gap-2 rounded-[9px] bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white transition-opacity hover:opacity-90"
-                                                >
-                                                    <WhatsAppIcon className="h-4 w-4" />
-                                                    Also message us on WhatsApp
-                                                </a>
-                                            </StatusPanel>
+                                            />
                                         )}
 
-                                        {status === "handed-off" && (
+                                        {status === "saved-email-error" && (
                                             <StatusPanel
-                                                key="handed-off"
-                                                tone="success"
-                                                title="Your enquiry is ready in WhatsApp"
-                                                body="Your enquiry is ready in WhatsApp. Press send there to message us."
-                                                reduce={reduce}
-                                            >
-                                                <div className="mt-4 flex flex-wrap gap-2.5">
-                                                    <a
-                                                        href={buildWhatsAppUrl(messageRef.current || composed)}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-2 rounded-[9px] bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white transition-opacity hover:opacity-90"
-                                                    >
-                                                        <WhatsAppIcon className="h-4 w-4" />
-                                                        Open WhatsApp again
-                                                    </a>
-                                                    <button
-                                                        type="button"
-                                                        onClick={copyMessage}
-                                                        className="inline-flex items-center gap-2 rounded-[9px] border border-rule px-4 py-2.5 text-[14px] text-text transition-colors hover:border-text"
-                                                    >
-                                                        <Copy className="h-4 w-4" aria-hidden="true" />
-                                                        {copied ? "Copied" : "Copy details"}
-                                                    </button>
-                                                </div>
-                                            </StatusPanel>
-                                        )}
-
-                                        {status === "blocked" && (
-                                            <StatusPanel
-                                                key="blocked"
+                                                key="saved-email-error"
                                                 tone="warn"
-                                                title="Your browser blocked the WhatsApp tab"
-                                                body="Please allow pop-ups for this site, or copy your enquiry details instead:"
+                                                title="Your enquiry is saved"
+                                                body="Your details are safely saved for the Kala Mandir team in the admin panel, but the email notification could not be sent. Please call or WhatsApp us if you need an immediate response."
                                                 reduce={reduce}
-                                            >
-                                                <div className="mt-4 flex flex-wrap gap-2.5">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => window.open(buildWhatsAppUrl(messageRef.current || composed), "_blank", "noopener,noreferrer")}
-                                                        className="inline-flex items-center gap-2 rounded-[9px] bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white"
-                                                    >
-                                                        <WhatsAppIcon className="h-4 w-4" />
-                                                        Try WhatsApp again
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={copyMessage}
-                                                        className="inline-flex items-center gap-2 rounded-[9px] border border-rule px-4 py-2.5 text-[14px] text-text"
-                                                    >
-                                                        <Copy className="h-4 w-4" aria-hidden="true" />
-                                                        {copied ? "Copied" : "Copy details"}
-                                                    </button>
-                                                </div>
-                                            </StatusPanel>
+                                            />
                                         )}
 
                                         {status === "error" && (
@@ -509,7 +444,7 @@ export default function EnquiryForm() {
                                                 key="error"
                                                 tone="warn"
                                                 title="That didn't go through"
-                                                body="Please try again, or reach us directly on WhatsApp — your details will still be here."
+                                                body={`${submitError || "Your enquiry could not be submitted."} Please try again, or contact us directly by phone or WhatsApp.`}
                                                 reduce={reduce}
                                             />
                                         )}
@@ -534,11 +469,10 @@ export default function EnquiryForm() {
                                                     className="h-4 w-4 animate-spin"
                                                     aria-hidden="true"
                                                 />
-                                                Preparing…
+                                                Sending…
                                             </>
                                         ) : (
                                             <>
-                                                <WhatsAppIcon className="h-4 w-4" />
                                                 Submit enquiry
                                                 <ArrowUpRight
                                                     aria-hidden="true"
@@ -554,6 +488,15 @@ export default function EnquiryForm() {
                     </div>
                 </div>
             </div>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                newestOnTop
+                closeOnClick
+                pauseOnHover
+                theme="light"
+                limit={3}
+            />
         </section>
     );
 }
@@ -561,20 +504,6 @@ export default function EnquiryForm() {
 /* -------------------------------------------------------------------------- */
 /* Small internal pieces                                                       */
 /* -------------------------------------------------------------------------- */
-
-function composeEnquiry(values) {
-    const lines = [
-        `Hello Kala Mandir, I'd like to enquire about ${values.interest || "a class"}.`,
-        "",
-        `Name: ${values.name || ""}`,
-        `Phone: ${values.phone || ""}`,
-    ];
-    if (values.ageGroup) lines.push(`Age group: ${values.ageGroup}`);
-    lines.push(`Preferred contact: ${values.method || ""}`);
-    if (values.message) lines.push(`Message: ${values.message}`);
-    lines.push("", `— sent from ${siteConfig.domain}`);
-    return lines.join("\n");
-}
 
 function Field({ id, label, required, optional, error, className, children }) {
     return (

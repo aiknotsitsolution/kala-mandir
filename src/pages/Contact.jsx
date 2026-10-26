@@ -4,6 +4,7 @@ import { ArrowDown, ArrowUpRight, MapPin } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
 import { Reveal } from "@/components/Reveal";
 import { editorialImages } from "@/data/gallery";
+import { useSmoothAnchors } from "@/hooks";
 
 function ContactBanner() {
     return (
@@ -76,6 +77,8 @@ function ContactBanner() {
 }
 
 export default function Contact() {
+    useSmoothAnchors(true);
+
     return (
         <main id="main">
             <ContactBanner />

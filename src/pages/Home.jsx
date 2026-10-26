@@ -1,6 +1,8 @@
 import Hero from "@/components/Hero";
 import IntroSection from "@/components/IntroSection";
 import ClassesSection from "@/components/ClassesSection";
+import EnquiryForm from "@/components/EnquiryForm";
+import HomeEventsSection from "@/components/HomeEventsSection";
 import { useSmoothAnchors } from "@/hooks";
 
 /**
@@ -18,6 +20,8 @@ export default function Home() {
                 showIntroduction={false}
             />
             <ClassesSection showArtDetail={false} />
+            <HomeEventsSection />
+            <EnquiryForm mapLeft />
         </main>
     );
 }

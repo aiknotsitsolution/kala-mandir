@@ -2,8 +2,8 @@
 
 Responsive marketing site for **Kala Mandir Art and Dance Institute**, C-39,
 Sector 52, Noida. Built with React + Vite + React Router + Tailwind CSS v4 and
-`motion` for animation. The enquiry form opens WhatsApp; event listings load
-from the institute backend.
+`motion` for animation. Enquiries and event listings connect to the institute
+backend.
 
 ## Run it
 
@@ -48,10 +48,14 @@ are supported by the Vite development server and the Vercel rewrite in
   on purpose. Add them only after the institute confirms them in writing.
 - **Business facts are centralised** in `src/data/siteConfig.js` (phone,
   WhatsApp, address, Instagram, Google Maps). Change a fact in one place.
-- **Enquiry form** posts to WhatsApp (wa.me).
+- **Enquiry form** posts directly to `/api/contact/enquiries`; submissions are
+  saved for the admin panel and trigger an email notification from the backend.
 - **Events** are created in the admin panel and stored by the backend; their
-  photos are uploaded to ImageKit. Set `VITE_API_URL` to the backend API base
-  (for example, `http://localhost:8001/api`) when it differs from the default.
+  photos are uploaded to ImageKit.
+- In development, Vite proxies `/api` to `http://localhost:8000`. For a
+  separately hosted backend, set `VITE_API_URL` to its API base (for example,
+  `https://api.example.com/api`) before building. Without that override,
+  production expects `/api` to be available on the website's origin.
 
 ## Media provenance
 

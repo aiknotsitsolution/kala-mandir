@@ -5,7 +5,7 @@ import SectionHeading from "@/components/SectionHeading";
 import { MediaMask, Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
 import ArtBackdrop from "@/components/Artbackdrop";
 import { classes } from "@/data/classes";
-import { editorialImages } from "@/data/gallery";
+import { editorialImages, galleryItems } from "@/data/gallery";
 import SmartImage from "@/components/SmartImage";
 import { ArrowUpRight, Palette, Users, Sparkles, Play, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -52,6 +52,10 @@ const steps = [
 ];
 
 const shadow = "shadow-[0_18px_40px_-18px_rgba(120,40,80,0.35)]";
+const artMosaic = [
+    ...editorialImages.artDetail,
+    ...galleryItems.filter((artwork) => artwork.id === "km-artwork-07"),
+];
 
 export default function ClassesSection({ artOnly = false, showArtDetail = true }) {
     const visibleClasses = artOnly ? classes.slice(0, 2) : classes;
@@ -183,7 +187,37 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                                     className={imageRight ? "lg:order-2" : undefined}
                                 >
                                     <MediaMask className="rounded-[20px]">
-                                        {item.video ? (
+                                        {item.id === "art-drawing" ? (
+                                            <div
+                                                role="group"
+                                                aria-label="A selection of Kala Mandir student artwork"
+                                                className="grid aspect-[4/3] grid-cols-6 grid-rows-2 gap-2 rounded-[20px] bg-blossom p-2.5 sm:gap-3 sm:p-3"
+                                            >
+                                                {artMosaic.map(
+                                                    (artwork, artworkIndex) => (
+                                                        <figure
+                                                            key={artwork.id}
+                                                            className={`overflow-hidden rounded-[12px] border border-white/80 bg-white p-1.5 shadow-[0_14px_30px_-18px_rgba(120,40,80,0.45)] motion-safe:animate-[artwork-float_5s_ease-in-out_infinite] sm:rounded-[14px] sm:p-2 ${
+                                                                artworkIndex < 2
+                                                                    ? "col-span-3"
+                                                                    : "col-span-2"
+                                                            }`}
+                                                            style={{
+                                                                animationDelay: `${artworkIndex * -0.8}s`,
+                                                            }}
+                                                        >
+                                                            <SmartImage
+                                                                image={artwork}
+                                                                sizes="(max-width: 1023px) 30vw, 15vw"
+                                                                fit="contain"
+                                                                className="h-full w-full rounded-[9px] bg-[#fffafc]"
+                                                                imgClassName="transition-transform duration-500 hover:scale-[1.04]"
+                                                            />
+                                                        </figure>
+                                                    ),
+                                                )}
+                                            </div>
+                                        ) : item.video ? (
                                             <div
                                                 className="group/video relative aspect-[4/3] w-full overflow-hidden rounded-[20px] bg-plum sm:aspect-[16/10] lg:aspect-[4/3]"
                                                 onMouseEnter={playPreview}
