@@ -79,7 +79,7 @@ const schema = z.object({
 export default function EnquiryForm({ mapLeft = false }) {
     const reduce = useReducedMotion();
     const { state: routeState } = useLocation();
-    const mountedAt = useRef(Date.now());
+    const formStartedAt = useRef(null);
 
     const [status, setStatus] = useState("idle"); // idle | submitting | submitted | saved-email-error | error
     const [submitError, setSubmitError] = useState("");
@@ -125,22 +125,40 @@ export default function EnquiryForm({ mapLeft = false }) {
         toast.error(firstError?.message || "Please check the form and try again.");
     };
 
+    const startFormTimer = () => {
+        if (formStartedAt.current === null) {
+            formStartedAt.current = Date.now();
+        }
+    };
+
     const onSubmit = async (values) => {
         // Spam guard: require a human amount of time on the form.
-        if (Date.now() - mountedAt.current < siteConfig.enquiry.minFillMs) {
+        if (
+            formStartedAt.current === null ||
+            Date.now() - formStartedAt.current < siteConfig.enquiry.minFillMs
+        ) {
             const message = "Please take a moment to review your enquiry before submitting.";
             setStatus("error");
             setSubmitError(message);
             toast.error(message);
             return;
         }
-        // Honeypot tripped → silently drop, never show an error to the bot.
-        if (values.company) return;
+        // Do not leave autofilled honeypot submissions looking like a silent failure.
+        if (values.company) {
+            const message = "Your enquiry could not be verified. Please check the form and try again.";
+            setStatus("error");
+            setSubmitError(message);
+            toast.error(message);
+            return;
+        }
 
         try {
             setStatus("submitting");
             setSubmitError("");
             const result = await postApi("/contact/enquiries", values);
+            if (!result?.id) {
+                throw new Error("Your enquiry was not saved. Please try again.");
+            }
             if (result?.emailSent === false) {
                 setStatus("saved-email-error");
                 toast.warning("Your enquiry was saved, but the email notification could not be sent.");
@@ -289,6 +307,8 @@ export default function EnquiryForm({ mapLeft = false }) {
                         <Reveal delay={0.08}>
                             <form
                                 onSubmit={handleSubmit(onSubmit, onInvalid)}
+                                onFocusCapture={startFormTimer}
+                                onChangeCapture={startFormTimer}
                                 noValidate
                                 aria-describedby="form-note"
                                 className="rounded-[20px] border border-rule bg-white p-5 shadow-[0_24px_70px_-48px_rgba(53,21,54,0.32)] sm:p-7 lg:rounded-[24px] lg:p-9"
@@ -410,7 +430,7 @@ export default function EnquiryForm({ mapLeft = false }) {
                                             id="company"
                                             type="text"
                                             tabIndex={-1}
-                                            autoComplete="off"
+                                            autoComplete="new-password"
                                             {...register("company")}
                                         />
                                     </div>

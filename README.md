@@ -50,6 +50,8 @@ are supported by the Vite development server and the Vercel rewrite in
   WhatsApp, address, Instagram, Google Maps). Change a fact in one place.
 - **Enquiry form** posts directly to `/api/contact/enquiries`; submissions are
   saved for the admin panel and trigger an email notification from the backend.
+  The admin Enquiries page refreshes when opened and includes a manual refresh
+  button for new submissions.
 - **Events** are created in the admin panel and stored by the backend; their
   photos are uploaded to ImageKit.
 - In development, Vite proxies `/api` to `http://localhost:8000`. For a

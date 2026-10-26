@@ -11,7 +11,12 @@ async function requestApi(path, options) {
 
     const result = await response.json().catch(() => null);
     if (!response.ok || !result || result.success === false) {
-        throw new Error(result?.message || `Request failed (${response.status})`);
+        throw new Error(
+            result?.message ||
+                (response.status >= 500
+                    ? "The server could not save your enquiry. Please try again shortly."
+                    : `Request failed (${response.status})`),
+        );
     }
     return result?.data;
 }
