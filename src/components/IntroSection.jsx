@@ -40,7 +40,12 @@ export default function IntroSection({
             tagline: "Imagine · Create · Grow",
             action: "Explore art classes",
             href: "/art#art",
-            image: editorialImages.artDetail[1],
+            image: {
+                src: "/assets/institute/artcraft2.jpg",
+                alt: "Framed clay relief artwork of a woman holding a pot beside a lantern",
+                width: 768,
+                height: 825,
+            },
             surface: "bg-lavender",
             accent: "text-violet",
             imageFade: "to-lavender/70",

@@ -350,10 +350,10 @@ export const instagramPosts = [    {
  */
 export const editorialImages = {
     aboutOverview: {
-        src: "/assets/institute/trainer-award.jpeg",
-        alt: "A Kala Mandir dancer receiving an award from Kathak maestro Pandit Birju Maharaj",
-        width: 610,
-        height: 448,
+        src: "/assets/institute/trainer.jpg.jpeg",
+        alt: "A Kala Mandir dancer receiving an award from Kathak maestro Pandit Birju Maharaj on stage",
+        width: 1024,
+        height: 768,
     },
     intro: {
         main: {
