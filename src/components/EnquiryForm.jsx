@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +17,7 @@ import SectionHeading from "@/components/SectionHeading";
 import { Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
 import { buildWhatsAppUrl, contactLinks, siteConfig } from "@/data/siteConfig";
 import { cn } from "@/lib/utils";
+import { postApi } from "@/lib/api";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 /* -------------------------------------------------------------------------- */
@@ -83,12 +84,7 @@ const schema = z.object({
 /**
  * EnquiryForm (H) — "Your Creative Journey Starts Here."
  *
- * States: idle → submitting → handed-off | blocked | error.
- *
- * With no backend configured (`siteConfig.enquiry.endpoint === null`) the form
- * does NOT pretend to send anything. It validates, composes the message, opens
- * a pre-filled WhatsApp thread and tells the visitor plainly that nothing was
- * transmitted until they press send in WhatsApp. See README.md.
+ * States: idle → submitting → submitted | error.
  */
 export default function EnquiryForm() {
     const reduce = useReducedMotion();
@@ -96,7 +92,7 @@ export default function EnquiryForm() {
     const mountedAt = useRef(Date.now());
     const messageRef = useRef("");
 
-    const [status, setStatus] = useState("idle"); // idle | submitting | handed-off | blocked | error
+    const [status, setStatus] = useState("idle"); // idle | submitting | submitted | handed-off | blocked | error
     const [copied, setCopied] = useState(false);
 
     const {
@@ -137,21 +133,7 @@ export default function EnquiryForm() {
         return () => window.removeEventListener("km:interest", onInterest);
     }, [routeState, setValue]);
 
-    const composed = useMemo(() => {
-        const v = getValues();
-        const lines = [
-            `Hello Kala Mandir, I'd like to enquire about ${v.interest || "a class"}.`,
-            "",
-            `Name: ${v.name || ""}`,
-            `Phone: ${v.phone || ""}`,
-        ];
-        if (v.ageGroup) lines.push(`Age group: ${v.ageGroup}`);
-        lines.push(`Preferred contact: ${v.method || ""}`);
-        if (v.message) lines.push(`Message: ${v.message}`);
-        lines.push("", `— sent from ${siteConfig.domain}`);
-        return lines.join("\n");
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [status]);
+    const composed = composeEnquiry(getValues());
 
     const onSubmit = async (values) => {
         // Spam guard: require a human amount of time on the form.
@@ -165,31 +147,12 @@ export default function EnquiryForm() {
             return;
         }
 
-        messageRef.current = composed;
+        messageRef.current = composeEnquiry(values);
 
         try {
-            if (siteConfig.enquiry.endpoint) {
-                setStatus("submitting");
-                const response = await fetch(siteConfig.enquiry.endpoint, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(values),
-                });
-                if (!response.ok) throw new Error("Request failed");
-                setStatus("handed-off");
-                return;
-            }
-
-            // No backend: hand the composed enquiry to WhatsApp.
             setStatus("submitting");
-            const url = buildWhatsAppUrl(messageRef.current);
-            const win = window.open(url, "_blank", "noopener,noreferrer");
-            if (win) {
-                setStatus("handed-off");
-                // Leave the visitor where they are; the new tab carries the thread.
-            } else {
-                setStatus("blocked");
-            }
+            await postApi("/contact/enquiries", values);
+            setStatus("submitted");
         } catch {
             setStatus("error");
         }
@@ -281,9 +244,9 @@ export default function EnquiryForm() {
 
                             {/* Honest privacy note */}
                             <p className="mt-6 border-t border-rule pt-4 text-[13.5px] leading-relaxed text-muted">
-                                Your details are used only to reply to this
-                                enquiry. Nothing is stored on this website, and
-                                nothing is shared with third parties.
+                                Your details are saved so our team can respond
+                                to this enquiry. They are not used for unrelated
+                                purposes.
                             </p>
                         </Reveal>
                     </div>
@@ -462,12 +425,32 @@ export default function EnquiryForm() {
                                 {/* Status region */}
                                 <div aria-live="polite" className="mt-6">
                                     <AnimatePresence mode="wait" initial={false}>
-                                        {status === "handed-off" && !siteConfig.enquiry.endpoint && (
+                                        {status === "submitted" && (
+                                            <StatusPanel
+                                                key="submitted"
+                                                tone="success"
+                                                title="Your enquiry has been received"
+                                                body="Thank you for contacting Kala Mandir. Your details have been saved and our team will get back to you."
+                                                reduce={reduce}
+                                            >
+                                                <a
+                                                    href={buildWhatsAppUrl(messageRef.current || composed)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="mt-4 inline-flex items-center gap-2 rounded-[9px] bg-[#25D366] px-4 py-2.5 text-[14px] font-medium text-white transition-opacity hover:opacity-90"
+                                                >
+                                                    <WhatsAppIcon className="h-4 w-4" />
+                                                    Also message us on WhatsApp
+                                                </a>
+                                            </StatusPanel>
+                                        )}
+
+                                        {status === "handed-off" && (
                                             <StatusPanel
                                                 key="handed-off"
                                                 tone="success"
                                                 title="Your enquiry is ready in WhatsApp"
-                                                body="A new tab has opened with your details filled in — press send there and we'll reply. Nothing was submitted to this website, because this site has no server to submit to."
+                                                body="Your enquiry is ready in WhatsApp. Press send there to message us."
                                                 reduce={reduce}
                                             >
                                                 <div className="mt-4 flex flex-wrap gap-2.5">
@@ -497,7 +480,7 @@ export default function EnquiryForm() {
                                                 key="blocked"
                                                 tone="warn"
                                                 title="Your browser blocked the WhatsApp tab"
-                                                body="Please allow pop-ups for this site, or use one of these options instead:"
+                                                body="Please allow pop-ups for this site, or copy your enquiry details instead:"
                                                 reduce={reduce}
                                             >
                                                 <div className="mt-4 flex flex-wrap gap-2.5">
@@ -556,7 +539,7 @@ export default function EnquiryForm() {
                                         ) : (
                                             <>
                                                 <WhatsAppIcon className="h-4 w-4" />
-                                                Send enquiry on WhatsApp
+                                                Submit enquiry
                                                 <ArrowUpRight
                                                     aria-hidden="true"
                                                     className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -578,6 +561,20 @@ export default function EnquiryForm() {
 /* -------------------------------------------------------------------------- */
 /* Small internal pieces                                                       */
 /* -------------------------------------------------------------------------- */
+
+function composeEnquiry(values) {
+    const lines = [
+        `Hello Kala Mandir, I'd like to enquire about ${values.interest || "a class"}.`,
+        "",
+        `Name: ${values.name || ""}`,
+        `Phone: ${values.phone || ""}`,
+    ];
+    if (values.ageGroup) lines.push(`Age group: ${values.ageGroup}`);
+    lines.push(`Preferred contact: ${values.method || ""}`);
+    if (values.message) lines.push(`Message: ${values.message}`);
+    lines.push("", `— sent from ${siteConfig.domain}`);
+    return lines.join("\n");
+}
 
 function Field({ id, label, required, optional, error, className, children }) {
     return (

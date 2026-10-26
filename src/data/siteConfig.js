@@ -83,6 +83,7 @@ export const siteConfig = {
         { label: "Gallery", href: "/gallery" },
         { label: "Art", href: "/art" },
         { label: "Dance", href: "/dance" },
+        { label: "Events", href: "/events" },
         { label: "Contact", href: "/contact" },
     ],
 };
