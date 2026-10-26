@@ -186,11 +186,11 @@ export default function ArtGallery({ artOnly = false }) {
             id="gallery"
             data-tone="light"
             aria-labelledby="gallery-title"
-            className="section relative bg-blossom"
+            className="section relative bg-blossom pt-0"
         >
             <div
                 data-tone="dark"
-                className="relative isolate flex min-h-[22rem] items-center overflow-hidden bg-plum sm:min-h-[28rem] lg:min-h-[32rem]"
+                className="relative isolate flex min-h-[20rem] items-center overflow-hidden bg-plum sm:min-h-[25rem] lg:min-h-[29rem]"
             >
                 <SmartImage
                     image={danceShowcase.wide}
@@ -203,7 +203,12 @@ export default function ArtGallery({ artOnly = false }) {
                     aria-hidden="true"
                     className="absolute inset-0 bg-gradient-to-r from-charcoal/85 via-plum/55 to-plum/15"
                 />
-                <div className="shell relative z-10 py-20">
+                <motion.div
+                    className="shell relative z-10 py-20"
+                    initial={reduce ? false : { opacity: 0, y: 22 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: reduce ? 0 : 0.7, ease }}
+                >
                     <p className="eyebrow text-gold">Kala Mandir · Art & Dance</p>
                     <h1 className="mt-4 max-w-3xl font-display text-[clamp(2.8rem,7vw,5.5rem)] leading-[1.02] text-cream">
                         Student{" "}
@@ -212,7 +217,7 @@ export default function ArtGallery({ artOnly = false }) {
                     <p className="mt-5 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
                         Explore the artwork and dance moments created in our studio.
                     </p>
-                </div>
+                </motion.div>
             </div>
 
             {/* Decorative corner paint-swatch — quiet, aria-hidden */}
