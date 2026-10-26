@@ -1,12 +1,13 @@
 
-
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import SectionHeading from "@/components/SectionHeading";
 import { MediaMask, Reveal, RevealGroup, RevealItem } from "@/components/Reveal";
 import ArtBackdrop from "@/components/Artbackdrop";
 import { classes } from "@/data/classes";
 import { editorialImages } from "@/data/gallery";
 import SmartImage from "@/components/SmartImage";
-import { ArrowUpRight, Palette, Users, Sparkles } from "lucide-react";
+import { ArrowUpRight, Palette, Users, Sparkles, Play, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 /**
@@ -54,6 +55,36 @@ const shadow = "shadow-[0_18px_40px_-18px_rgba(120,40,80,0.35)]";
 
 export default function ClassesSection({ artOnly = false, showArtDetail = true }) {
     const visibleClasses = artOnly ? classes.slice(0, 2) : classes;
+    const [openVideo, setOpenVideo] = useState(null);
+    const choreographyVideoRef = useRef(null);
+
+    const playPreview = () => {
+        const video = choreographyVideoRef.current;
+        if (!video) return;
+        video.muted = true;
+        video.play().catch(() => {});
+    };
+
+    const stopPreview = () => {
+        const video = choreographyVideoRef.current;
+        if (!video) return;
+        video.pause();
+        video.currentTime = 0;
+    };
+
+    useEffect(() => {
+        if (!openVideo) return undefined;
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") setOpenVideo(null);
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [openVideo]);
 
     return (
         <section
@@ -152,12 +183,44 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                                     className={imageRight ? "lg:order-2" : undefined}
                                 >
                                     <MediaMask className="rounded-[20px]">
-                                        <SmartImage
-                                            image={item.image}
-                                            sizes="(max-width: 1023px) 92vw, 46vw"
-                                            className="aspect-[4/3] w-full rounded-[20px] sm:aspect-[16/10] lg:aspect-[4/3]"
-                                            imgClassName="transition-transform duration-700 ease-out hover:scale-[1.035]"
-                                        />
+                                        {item.video ? (
+                                            <div
+                                                className="group/video relative aspect-[4/3] w-full overflow-hidden rounded-[20px] bg-plum sm:aspect-[16/10] lg:aspect-[4/3]"
+                                                onMouseEnter={playPreview}
+                                                onMouseLeave={stopPreview}
+                                            >
+                                                <video
+                                                    ref={choreographyVideoRef}
+                                                    src={item.video}
+                                                    muted
+                                                    playsInline
+                                                    loop
+                                                    preload="metadata"
+                                                    aria-label={`${item.title} video preview`}
+                                                    className="h-full w-full object-cover transition-transform duration-700 group-hover/video:scale-[1.035]"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        stopPreview();
+                                                        setOpenVideo(item);
+                                                    }}
+                                                    aria-label={`Watch ${item.title} video`}
+                                                    className="absolute inset-0 flex items-center justify-center bg-black/10 text-white transition-colors hover:bg-black/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                                                >
+                                                    <span className="grid h-16 w-16 place-items-center rounded-full border border-white/75 bg-black/35 backdrop-blur-sm">
+                                                        <Play className="ml-1 h-7 w-7 fill-current" aria-hidden="true" />
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <SmartImage
+                                                image={item.image}
+                                                sizes="(max-width: 1023px) 92vw, 46vw"
+                                                className="aspect-[4/3] w-full rounded-[20px] sm:aspect-[16/10] lg:aspect-[4/3]"
+                                                imgClassName="transition-transform duration-700 ease-out hover:scale-[1.035]"
+                                            />
+                                        )}
                                     </MediaMask>
                                 </Reveal>
 
@@ -381,6 +444,38 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                     </div>
                 </div>
             )}
+            <AnimatePresence>
+                {openVideo && (
+                    <motion.div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={`Watch ${openVideo.title}`}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm sm:p-8"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onMouseDown={(event) => {
+                            if (event.target === event.currentTarget) setOpenVideo(null);
+                        }}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setOpenVideo(null)}
+                            aria-label="Close video"
+                            className="absolute right-4 top-4 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-black/40 text-white transition-colors hover:bg-white/15 sm:right-7 sm:top-7"
+                        >
+                            <X className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                        <video
+                            src={openVideo.video}
+                            controls
+                            autoPlay
+                            playsInline
+                            className="max-h-[85svh] w-full max-w-5xl rounded-xl bg-black shadow-2xl"
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 }

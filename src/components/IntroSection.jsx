@@ -1,5 +1,4 @@
 
-
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import SmartImage from "@/components/SmartImage";
@@ -75,10 +74,10 @@ export default function IntroSection({
             description:
                 "Learn to dance from our Bollywood dance classes taught by world-class dance instructors and choreographers. You will also get to learn exercises, combinations, warm-ups for any skill level. Our courses are designed to fit around everyone’s schedules.",
             image: {
-                src: "/assets/institute/dance-bollywood.jpg",
-                alt: "A dancer performing on stage in a black costume",
-                width: 600,
-                height: 600,
+                src: "/assets/institute/Bollywooddance.jpg?v=2",
+                alt: "Two students practicing Bollywood dance together in a studio",
+                width: 768,
+                height: 1024,
             },
             href: "/dance#bollywood",
             surface: "bg-lavender",
@@ -196,15 +195,27 @@ export default function IntroSection({
                                 <div
                                     className={`group flex h-full flex-col overflow-hidden rounded-[18px] border border-white/80 ${card.surface} shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)]`}
                                 >
-                                    {/* Image */}
-                                    <div className="relative aspect-[4/3] w-full overflow-hidden">
-                                        <SmartImage
-                                            image={card.image}
-                                            alt={card.title}
-                                            sizes="(max-width: 639px) 92vw, (max-width: 1023px) 45vw, 30vw"
-                                            className="h-full w-full"
-                                            imgClassName="transition-transform duration-700 ease-out group-hover:scale-105"
-                                        />
+                                    {/* Class image */}
+                                    <div className="group/media relative aspect-[4/3] w-full overflow-hidden">
+                                        {card.title === "Bollywood Dance Classes" ? (
+                                            <img
+                                                src={card.image.src}
+                                                alt={card.image.alt}
+                                                width={card.image.width}
+                                                height={card.image.height}
+                                                loading="lazy"
+                                                decoding="async"
+                                                className="h-full w-full object-cover object-[50%_38%] transition-transform duration-700 group-hover/media:scale-105"
+                                            />
+                                        ) : (
+                                            <SmartImage
+                                                image={card.image}
+                                                alt={card.title}
+                                                sizes="(max-width: 639px) 92vw, (max-width: 1023px) 45vw, 30vw"
+                                                className="h-full w-full"
+                                                imgClassName="transition-transform duration-700 ease-out group-hover/media:scale-105"
+                                            />
+                                        )}
                                         <div
                                             aria-hidden="true"
                                             className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
