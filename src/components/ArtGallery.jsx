@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowUpRight, Heart, Music, Users } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import SectionHeading from "@/components/SectionHeading";
 import SmartImage from "@/components/SmartImage";
@@ -11,12 +11,10 @@ import GalleryLightbox, { ZoomCue } from "@/components/GalleryLightbox";
 import { Reveal, RevealGroup } from "@/components/Reveal";
 import {
     editorialImages,
-    galleryCategories,
-    galleryItems,
-    instagramPosts,
 } from "@/data/gallery";
 import { cn } from "@/lib/utils";
 import { ease } from "@/lib/motion";
+import { fetchApi } from "@/lib/api";
 
 /**
  * ArtGallery — THE section the page is built around.
@@ -72,76 +70,116 @@ const CROPS = {
     landscape: "aspect-[4/3]",
 };
 
+const PAGE_SIZE = 12;
 const danceShowcase = editorialImages.danceShowcase;
-const danceGalleryItems = [
-    { image: danceShowcase.wide, styles: [] },
-    { image: danceShowcase.group, styles: ["kids", "bollywood"] },
-    { image: danceShowcase.zumba, styles: ["freestyle", "contemporary"] },
-    { image: danceShowcase.wedding, styles: ["wedding", "couple"] },
-    { image: danceShowcase.duo, styles: ["couple", "bollywood"] },
-    { image: instagramPosts[2], styles: ["bollywood", "freestyle", "contemporary"] },
-    { image: instagramPosts[3], styles: ["kids", "contemporary"] },
-].map(({ image, styles }, index) => ({
-    ...image,
-    id: `dance-gallery-${index}`,
-    category: "dance",
-    danceStyles: styles,
-    caption: image.caption || image.alt,
-}));
-
-const danceVideos = [
-    {
-        id: "dance-video-couple",
-        type: "video",
-        src: "/assets/video/CoupleDance.mp4",
-        alt: "Couple dance class video",
-        caption: "Couple Dance",
-        category: "dance",
-        danceStyles: ["couple"],
-    },
-    {
-        id: "dance-video-wedding",
-        type: "video",
-        src: "/assets/video/coupleDancewedding.mp4",
-        alt: "Wedding couple dance video",
-        caption: "Wedding Dance",
-        category: "dance",
-        danceStyles: ["wedding", "couple"],
-    },
-];
-
-
-const danceCategories = [
-    { id: "wedding", label: "Wedding Dance", icon: Users },
-    { id: "couple", label: "Couple Dance", icon: Users },
-    { id: "bollywood", label: "Bollywood", icon: Heart },
-    { id: "freestyle", label: "Freestyle", icon: Music },
-    { id: "kids", label: "Kids Dance", icon: Users },
-    { id: "contemporary", label: "Contemporary", icon: Users },
-];
 
 export default function ArtGallery({ artOnly = false }) {
-    const [activeMain, setActiveMain] = useState("all");
-    const [activeArtCategory, setActiveArtCategory] = useState("all");
-    const [activeDanceCategory, setActiveDanceCategory] = useState("all");
+    const [categories, setCategories] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState("");
+    const [selectedSubcategory, setSelectedSubcategory] = useState("");
+    const [mediaType, setMediaType] = useState("all");
+    const [filtered, setFiltered] = useState([]);
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
+    const [mediaLoading, setMediaLoading] = useState(false);
+    const [categoryError, setCategoryError] = useState("");
+    const [mediaError, setMediaError] = useState("");
     const [openIndex, setOpenIndex] = useState(null);
+    const [openVideo, setOpenVideo] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
     const reduce = useReducedMotion();
-    const artItems = galleryItems.filter((item) => item.category !== "dance");
-    const visibleItems = artOnly
-        ? artItems
-        : [...artItems, ...danceGalleryItems, ...danceVideos];
-    const danceItems = visibleItems.filter((item) => item.category === "dance");
-    const filtered =
-        activeMain === "dance"
-            ? activeDanceCategory === "all"
-                ? danceItems
-                : danceItems.filter((item) => item.danceStyles?.includes(activeDanceCategory))
-            : activeMain === "art"
-              ? activeArtCategory === "all"
-                  ? artItems
-                  : artItems.filter((item) => item.category === activeArtCategory)
-              : visibleItems;
+    const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
     const lightboxItems = filtered.filter((item) => item.type !== "video");
+    const visibleItems = filtered.filter((item) => mediaType === "all" || item.type === mediaType);
+    const pageCount = Math.ceil(visibleItems.length / PAGE_SIZE);
+    const pagedItems = visibleItems.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+    useEffect(() => {
+        if (pageCount > 0 && currentPage > pageCount) setCurrentPage(pageCount);
+    }, [currentPage, pageCount]);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        setCategoriesLoading(true);
+        fetchApi("/gallery/categories", { signal: controller.signal })
+            .then((result) => {
+                const nextCategories = result.map((category) => ({
+                    ...category,
+                    id: category._id,
+                    subcategories: category.subcategories || [],
+                }));
+                setCategories(nextCategories);
+                setCategoryError("");
+            })
+            .catch((error) => {
+                if (error.name !== "AbortError") setCategoryError(error.message);
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) setCategoriesLoading(false);
+            });
+        return () => controller.abort();
+    }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const params = new URLSearchParams();
+        if (selectedCategoryId) params.set("categoryId", selectedCategoryId);
+        if (selectedCategoryId && !selectedSubcategory) {
+            setFiltered([]);
+            setMediaError("");
+            setMediaLoading(false);
+            return undefined;
+        }
+        if (selectedCategoryId && selectedSubcategory !== "__all__") {
+            params.set("subcategory", selectedSubcategory);
+        }
+        setMediaLoading(true);
+        setFiltered([]);
+        setMediaError("");
+        const query = params.toString();
+        fetchApi(`/gallery/media${query ? `?${query}` : ""}`, { signal: controller.signal })
+            .then((result) => {
+                setFiltered(result.map((item) => ({
+                    id: item.id,
+                    type: item.type,
+                    src: item.type === "video" ? item.url : item.thumbnailUrl || item.url,
+                    fallback: item.url,
+                    alt: item.title,
+                    caption: item.title,
+                    category: item.categoryName,
+                    subcategory: item.subcategory,
+                    width: 1200,
+                    height: 900,
+                    crop: item.type === "video" ? "landscape" : "portrait",
+                    status: "institute",
+                })));
+            })
+            .catch((error) => {
+                if (error.name !== "AbortError") setMediaError(error.message);
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) setMediaLoading(false);
+            });
+        return () => controller.abort();
+    }, [selectedCategoryId, selectedSubcategory]);
+
+    useEffect(() => {
+        if (!openVideo) return undefined;
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") setOpenVideo(null);
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [openVideo]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+        setOpenIndex(null);
+    }, [selectedCategoryId, selectedSubcategory, mediaType]);
 
     return (
         <section
@@ -222,143 +260,105 @@ export default function ArtGallery({ artOnly = false }) {
                     </SectionHeading>
 
                     <Reveal delay={0.1}>
-                        <div className="flex flex-col gap-4">
-                            <div
-                                role="group"
-                                aria-label="Choose gallery collection"
-                                className="flex flex-wrap gap-2"
-                            >
-                                {[
-                                    { id: "all", label: "All Photos" },
-                                    { id: "art", label: "Art" },
-                                    ...(!artOnly ? [{ id: "dance", label: "Dance" }] : []),
-                                ].map((category) => {
-                                    const isActive = activeMain === category.id;
-                                    const accent = ACCENTS[category.id] || ACCENTS.all;
-                                    const count = visibleItems.filter((item) => (
-                                        category.id === "all"
-                                            ? true
-                                            : category.id === "art"
-                                              ? item.category !== "dance"
-                                              : item.category === "dance"
-                                    )).length;
-
-                                    return (
+                        <div className="rounded-[20px] border border-rule bg-white/85 p-4 shadow-[0_18px_45px_-34px_rgba(53,21,54,0.45)] sm:p-6">
+                            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                    <p className="eyebrow text-rose">Browse the collection</p>
+                                    <p className="mt-1 text-sm text-muted">
+                                        Showing {visibleItems.length} {mediaType === "all" ? "photos and videos" : mediaType === "photo" ? "photos" : "videos"}
+                                    </p>
+                                </div>
+                                <div className="flex rounded-full border border-rule bg-blossom/50 p-1" role="group" aria-label="Filter gallery by media type">
+                                    {[
+                                        { id: "all", label: "All" },
+                                        { id: "photo", label: "Photos" },
+                                        { id: "video", label: "Videos" },
+                                    ].map((option) => (
                                         <button
-                                            key={category.id}
+                                            key={option.id}
                                             type="button"
-                                            onClick={() => {
-                                                setActiveMain(category.id);
-                                                setActiveArtCategory("all");
-                                                setActiveDanceCategory("all");
-                                                setOpenIndex(null);
-                                            }}
-                                            aria-pressed={isActive}
+                                            onClick={() => setMediaType(option.id)}
+                                            aria-pressed={mediaType === option.id}
                                             className={cn(
-                                                "rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200",
-                                                isActive
-                                                    ? cn("border-transparent", accent.solid)
-                                                    : cn(
-                                                          "border-rule bg-white/70 text-muted hover:bg-white hover:text-text",
-                                                          accent.hover,
-                                                      ),
+                                                "rounded-full px-4 py-2 text-xs font-medium transition-all sm:text-sm",
+                                                mediaType === option.id
+                                                    ? "bg-plum text-white shadow-sm"
+                                                    : "text-muted hover:bg-white hover:text-text",
                                             )}
                                         >
-                                            {category.label}
-                                            <span className="ml-1.5 tabular-nums text-[11px] opacity-70">
-                                                {count}
+                                            {option.label}
+                                            <span className="ml-1.5 tabular-nums opacity-70">
+                                                {option.id === "all"
+                                                    ? filtered.length
+                                                    : filtered.filter((item) => item.type === option.id).length}
                                             </span>
                                         </button>
-                                    );
-                                })}
+                                    ))}
+                                </div>
                             </div>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <label className="grid gap-2 text-sm font-medium text-text">
+                                    Category
+                                    <select
+                                        value={selectedCategoryId}
+                                        onChange={(event) => {
+                                            const nextId = event.target.value;
+                                            const category = categories.find((item) => item.id === nextId);
+                                            setSelectedCategoryId(nextId);
+                                            setSelectedSubcategory(
+                                                category?.subcategories.length ? "" : "__all__",
+                                            );
+                                            setOpenIndex(null);
+                                        }}
+                                        disabled={categoriesLoading || categories.length === 0}
+                                        className="min-h-12 rounded-xl border border-rule bg-white px-4 text-[15px] font-normal text-text outline-none transition focus:border-rose focus:ring-2 focus:ring-rose/15 disabled:cursor-not-allowed disabled:bg-blossom/50"
+                                    >
+                                        <option value="">
+                                            {categoriesLoading ? "Loading categories..." : "All categories"}
+                                        </option>
+                                        {categories.map((category) => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
 
-                            {activeMain === "art" && (
-                                <div
-                                    role="group"
-                                    aria-label="Filter art photos by category"
-                                    className="flex flex-wrap gap-2 pl-2"
-                                >
-                                    {galleryCategories.map((category) => {
-                                        const isActive = activeArtCategory === category.id;
-                                        const accent = ACCENTS[category.id] || ACCENTS.all;
-                                        const count = visibleItems.filter((item) => (
-                                            item.category !== "dance" &&
-                                            (category.id === "all" || item.category === category.id)
-                                        )).length;
-
-                                        return (
-                                            <button
-                                                key={category.id}
-                                                type="button"
-                                                onClick={() => {
-                                                    setActiveArtCategory(category.id);
-                                                    setOpenIndex(null);
-                                                }}
-                                                aria-pressed={isActive}
-                                                className={cn(
-                                                    "rounded-full border px-4 py-2 text-[13px] transition-all duration-200",
-                                                    isActive
-                                                        ? cn("border-transparent", accent.solid)
-                                                        : cn(
-                                                              "border-rule bg-transparent text-muted hover:bg-white hover:text-text",
-                                                              accent.hover,
-                                                          ),
-                                                )}
-                                            >
-                                                {category.label}
-                                                <span className="ml-1.5 tabular-nums text-[11px] opacity-60">
-                                                    {count}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            {activeMain === "dance" && (
-                                <div
-                                    role="group"
-                                    aria-label="Filter dance photos by class"
-                                    className="flex flex-wrap gap-2 pl-2"
-                                >
-                                    {[
-                                        { id: "all", label: "All Dance", icon: Music },
-                                        ...danceCategories,
-                                    ].map(({ id, label, icon: Icon }) => {
-                                        const isActive = activeDanceCategory === id;
-                                        const count = visibleItems.filter((item) => (
-                                            item.category === "dance" &&
-                                            (id === "all" || item.danceStyles?.includes(id))
-                                        )).length;
-
-                                        return (
-                                            <button
-                                                key={id}
-                                                type="button"
-                                                onClick={() => {
-                                                    setActiveDanceCategory(id);
-                                                    setOpenIndex(null);
-                                                }}
-                                                aria-pressed={isActive}
-                                                className={cn(
-                                                    "inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] transition-all duration-200",
-                                                    isActive
-                                                        ? "border-transparent bg-flame text-white"
-                                                        : "border-rule bg-transparent text-muted hover:bg-white hover:text-flame",
-                                                )}
-                                            >
-                                                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                                                {label}
-                                                <span className="ml-0.5 tabular-nums text-[11px] opacity-70">
-                                                    {count}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                                <label className="grid gap-2 text-sm font-medium text-text">
+                                    Subcategory
+                                    <select
+                                        value={selectedSubcategory}
+                                        onChange={(event) => {
+                                            setSelectedSubcategory(event.target.value);
+                                            setOpenIndex(null);
+                                        }}
+                                        disabled={!selectedCategory || selectedCategory.subcategories.length === 0}
+                                        className="min-h-12 rounded-xl border border-rule bg-white px-4 text-[15px] font-normal text-text outline-none transition focus:border-rose focus:ring-2 focus:ring-rose/15 disabled:cursor-not-allowed disabled:bg-blossom/50"
+                                    >
+                                        <option value="">
+                                            {!selectedCategory
+                                                ? "Select a category first"
+                                                : selectedCategory.subcategories.length
+                                                  ? "Select a subcategory"
+                                                  : "No subcategories"}
+                                        </option>
+                                        {selectedCategory?.subcategories.length > 0 && (
+                                            <option value="__all__">All subcategories</option>
+                                        )}
+                                        {selectedCategory?.subcategories.map((subcategory) => (
+                                            <option key={subcategory} value={subcategory}>
+                                                {subcategory}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
                         </div>
+                        {(categoryError || mediaError) && (
+                            <p role="alert" className="mt-3 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+                                {categoryError || mediaError}
+                            </p>
+                        )}
                     </Reveal>
                 </div>
 
@@ -382,7 +382,7 @@ export default function ArtGallery({ artOnly = false }) {
                 {/* Masonry exhibition wall — calm, art-first, no distortion */}
                 <div className="mt-10 columns-1 gap-5 sm:columns-2 lg:mt-14 lg:columns-3 lg:gap-6">
                     <AnimatePresence mode="popLayout" initial={false}>
-                        {filtered.map((item) => {
+                        {pagedItems.map((item) => {
                             const accent = ACCENTS[item.category] || ACCENTS.all;
                             return (
                                 <motion.figure
@@ -403,14 +403,25 @@ export default function ArtGallery({ artOnly = false }) {
                                     className="group mb-5 break-inside-avoid lg:mb-6"
                                 >
                                     {item.type === "video" ? (
-                                        <video
-                                            src={item.src}
-                                            aria-label={item.alt}
-                                            controls
-                                            playsInline
-                                            preload="metadata"
-                                            className="tile-lift aspect-[4/5] w-full rounded-[14px] bg-plum object-cover"
-                                        />
+                                        <div className="relative overflow-hidden rounded-[14px] bg-plum">
+                                            <video
+                                                src={item.src}
+                                                aria-label={item.alt}
+                                                controls
+                                                playsInline
+                                                preload="metadata"
+                                                className="tile-lift aspect-[4/5] w-full object-cover"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setOpenVideo(item)}
+                                                aria-label={`Watch ${item.caption} in a larger player`}
+                                                className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-charcoal/80 px-3.5 py-2.5 text-xs font-medium text-white shadow-lg backdrop-blur transition hover:bg-rose focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                                            >
+                                                <Play aria-hidden="true" className="h-3.5 w-3.5 fill-current" />
+                                                Watch separately
+                                            </button>
+                                        </div>
                                     ) : (
                                         <button
                                             type="button"
@@ -480,6 +491,40 @@ export default function ArtGallery({ artOnly = false }) {
                         })}
                     </AnimatePresence>
                 </div>
+                {pageCount > 1 && (
+                    <nav
+                        aria-label="Gallery pages"
+                        className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-rule bg-white/70 px-4 py-4 sm:flex-row sm:px-6"
+                    >
+                        <p className="text-sm text-muted" aria-live="polite">
+                            Showing {(currentPage - 1) * PAGE_SIZE + 1}–
+                            {Math.min(currentPage * PAGE_SIZE, visibleItems.length)} of {visibleItems.length}
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                                disabled={currentPage === 1}
+                                className="inline-flex min-h-10 items-center gap-1 rounded-full border border-rule px-4 text-sm text-text transition hover:border-rose hover:text-rose disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+                                Previous
+                            </button>
+                            <span className="min-w-20 text-center text-sm font-medium text-text" aria-label={`Page ${currentPage} of ${pageCount}`}>
+                                {currentPage} / {pageCount}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))}
+                                disabled={currentPage === pageCount}
+                                className="inline-flex min-h-10 items-center gap-1 rounded-full border border-rule px-4 text-sm text-text transition hover:border-rose hover:text-rose disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                Next
+                                <ChevronRight aria-hidden="true" className="h-4 w-4" />
+                            </button>
+                        </div>
+                    </nav>
+                )}
 
                 {/* Enquiry CTA under the exhibition */}
                 <RevealGroup className="mt-14 flex flex-col items-start gap-6 border-t border-rule pt-8 sm:flex-row sm:items-center sm:justify-between">
@@ -511,26 +556,36 @@ export default function ArtGallery({ artOnly = false }) {
                     </div>
                 </RevealGroup>
 
-                {/* Empty state (defensive — filters always match at least one) */}
-                {filtered.length === 0 && (
+                {(categoriesLoading || mediaLoading) && (
                     <div className="mt-14 rounded-[14px] border border-dashed border-rule px-6 py-16 text-center">
-                        <p className="font-display text-[1.6rem] text-text">
-                            Nothing in this category yet.
-                        </p>
+                        <p className="font-display text-[1.4rem] text-text">Loading gallery...</p>
+                    </div>
+                )}
+                {!categoriesLoading && !categoryError && categories.length === 0 && (
+                    <div className="mt-14 rounded-[14px] border border-dashed border-rule px-6 py-16 text-center">
+                        <p className="font-display text-[1.6rem] text-text">No gallery categories yet.</p>
                         <p className="mt-2 text-[15px] text-muted">
-                            New work is added as it is approved.
+                            Categories added in the admin panel will appear here.
                         </p>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setActiveMain("all");
-                                setActiveArtCategory("all");
-                                setActiveDanceCategory("all");
-                            }}
-                            className="rule-link mt-6 text-[15px] text-rose"
-                        >
-                            Show all work
-                        </button>
+                    </div>
+                )}
+                {!mediaLoading && !mediaError && selectedCategory && !selectedSubcategory && (
+                    <div className="mt-14 rounded-[14px] border border-dashed border-rule px-6 py-16 text-center">
+                        <p className="font-display text-[1.4rem] text-text">Choose a subcategory to view its work.</p>
+                    </div>
+                )}
+                {!mediaLoading && !mediaError && filtered.length === 0 && (!selectedCategory || selectedSubcategory) && categories.length > 0 && (
+                    <div className="mt-14 rounded-[14px] border border-dashed border-rule px-6 py-16 text-center">
+                        <p className="font-display text-[1.6rem] text-text">No gallery items yet.</p>
+                        <p className="mt-2 text-[15px] text-muted">
+                            Photos and videos uploaded to this category will appear here.
+                        </p>
+                    </div>
+                )}
+                {!mediaLoading && !mediaError && filtered.length > 0 && visibleItems.length === 0 && (
+                    <div className="mt-14 rounded-[14px] border border-dashed border-rule px-6 py-16 text-center">
+                        <p className="font-display text-[1.5rem] text-text">No {mediaType === "photo" ? "photos" : "videos"} in this selection.</p>
+                        <p className="mt-2 text-[15px] text-muted">Choose another media filter to keep exploring.</p>
                     </div>
                 )}
             </div>
@@ -541,6 +596,50 @@ export default function ArtGallery({ artOnly = false }) {
                 onClose={() => setOpenIndex(null)}
                 onNavigate={setOpenIndex}
             />
+            <AnimatePresence>
+                {openVideo && (
+                    <motion.div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={`Video: ${openVideo.caption}`}
+                        tabIndex={-1}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={(event) => {
+                            if (event.target === event.currentTarget) setOpenVideo(null);
+                        }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-charcoal/90 p-4 backdrop-blur-sm sm:p-8"
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.97 }}
+                            transition={{ duration: 0.2 }}
+                            className="relative w-full max-w-5xl"
+                        >
+                            <button
+                                type="button"
+                                onClick={() => setOpenVideo(null)}
+                                aria-label="Close video player"
+                                className="absolute -top-12 right-0 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                            >
+                                <X aria-hidden="true" className="h-5 w-5" />
+                            </button>
+                            <video
+                                key={openVideo.id}
+                                src={openVideo.src}
+                                aria-label={openVideo.alt}
+                                controls
+                                autoPlay
+                                playsInline
+                                className="max-h-[80vh] w-full rounded-xl bg-black object-contain shadow-2xl"
+                            />
+                            <p className="mt-3 text-center text-sm text-white/80">{openVideo.caption}</p>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 }
