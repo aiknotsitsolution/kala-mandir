@@ -55,10 +55,10 @@ export default function IntroSection({
             description:
                 "The fusion of dance includes locking, popping, ballet, jazz, breaking, tap dancing & other dance styles. The dance form that is a full-body workout, has high impact & anaerobic health benefits. It strengthens the muscles in your arms, legs, core improving joints and bone health.",
             image: {
-                src: "/assets/institute/dance-hip-hop.jpg",
-                alt: "A group practising a hip-hop dance routine in a studio",
-                width: 350,
-                height: 233,
+                src: "/assets/institute/Hip_hop.jpg",
+                alt: "Hip-hop students and instructors posing after a group routine on a school stage",
+                width: 1024,
+                height: 768,
             },
             href: "/dance#hiphop",
             surface: "bg-blossom",
