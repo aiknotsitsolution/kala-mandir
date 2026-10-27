@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
             strictPort: false,
             proxy: {
                 "/api": {
-                    target: env.API_PROXY_TARGET || "http://127.0.0.1:8000",
+                    target: env.API_PROXY_TARGET || "https://kalamandir.online",
                     changeOrigin: true,
                 },
             },

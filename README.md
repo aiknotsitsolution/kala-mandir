@@ -14,16 +14,15 @@ npm run build      # production build → dist/
 npm run preview    # serve the production build locally
 ```
 
-Run the backend separately before using API-backed features. By default, the
-development server proxies `/api` to `http://127.0.0.1:8000`. If the backend
-runs elsewhere, set `API_PROXY_TARGET` in `.env.local`, for example:
+API-backed features use `https://kalamandir.online/api` by default. To point the
+development proxy at a different backend, set `API_PROXY_TARGET` in `.env.local`,
+for example:
 
 ```dotenv
 API_PROXY_TARGET=http://127.0.0.1:8001
 ```
 
-Restart Vite after changing the proxy target. A connection-refused proxy error
-means the configured backend host and port are not accepting connections.
+Restart Vite after changing the proxy target.
 
 ## Design system
 
@@ -65,11 +64,10 @@ are supported by the Vite development server and the Vercel rewrite in
   button for new submissions.
 - **Events** are created in the admin panel and stored by the backend; their
   photos are uploaded to ImageKit.
-- In development, Vite proxies `/api` to `http://127.0.0.1:8000` by default.
-  Override this with `API_PROXY_TARGET` if the backend listens elsewhere. For a
-  separately hosted backend, set `VITE_API_URL` to its API base (for example,
-  `https://api.example.com/api`) before building. Without that override,
-  production expects `/api` to be available on the website's origin.
+- API requests use `https://kalamandir.online/api` by default in development
+  and production. Set `VITE_API_URL` to a different API base before building if
+  needed. The optional Vite `/api` proxy targets `https://kalamandir.online` by
+  default and can be overridden with `API_PROXY_TARGET`.
 
 ## Media provenance
 
