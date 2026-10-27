@@ -89,12 +89,12 @@ export default function IntroSection({
             description:
                 "Discover the inner dancer in you, with our contemporary dance classes. This dance style solely belongs to the beginning of the 20th century. It has been an integral part of the dance and other art forms since then. This style is a fusion of lyrical and classical ballet, modern dance, jazz, and others.",
             image: {
-                src: "/assets/institute/dance.jpg",
-                alt: "A Kathak dancer performing on stage at Kamani Auditorium in Delhi",
+                src: "/assets/institute/Contemporary.png",
+                alt: "A contemporary dancer extending into an expressive pose",
                 width: 768,
                 height: 1024,
             },
-            href: "/dance#contemporary",
+            href: "/dance",
             surface: "bg-blush",
             accent: "text-pink",
             button: "bg-pink text-white group-hover:bg-rose",

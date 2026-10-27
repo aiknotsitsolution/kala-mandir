@@ -136,7 +136,7 @@ export const classes = [
         summary:
             "Special event and wedding choreography — routines shaped around your song, your people and your stage.",
         points: ["Wedding numbers", "Event performances", "Custom routines"],
-        video: "/assets/video/Coupledance2.mp4",
+        video: "/assets/video/Coupledance3.mp4",
         tone: "dark",
         layout: "full",
     },
