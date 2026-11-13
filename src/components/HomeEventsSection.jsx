@@ -11,7 +11,21 @@ export default function HomeEventsSection() {
     useEffect(() => {
         const controller = new AbortController();
         fetchApi("/events", { signal: controller.signal })
-            .then((result) => setEvents(result.slice(0, 3)))
+            .then((result) => {
+                const stageEvents = result.filter((event) =>
+                    event.title?.trim().toLowerCase().startsWith("classical stage dance performance"),
+                );
+                const classicalEvent = stageEvents.find(
+                    (event) => event.title.trim().toLowerCase() === "classical stage dance performance",
+                );
+                const semiClassicalEvent = stageEvents.find((event) => event !== classicalEvent);
+                setEvents([
+                    ...(classicalEvent ? [{ ...classicalEvent, styleLabel: "Classical" }] : []),
+                    ...(semiClassicalEvent
+                        ? [{ ...semiClassicalEvent, styleLabel: "Semi-Classical" }]
+                        : []),
+                ]);
+            })
             .catch((fetchError) => {
                 if (fetchError.name !== "AbortError") setError(fetchError.message);
             })
@@ -30,16 +44,15 @@ export default function HomeEventsSection() {
             <div className="shell">
                 <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
                     <div className="max-w-2xl">
-                        <p className="eyebrow text-rose">At the studio</p>
+                        <p className="eyebrow text-rose">Featured performances</p>
                         <h2
                             id="home-events-title"
                             className="mt-3 font-display text-[clamp(2.3rem,5vw,4rem)] leading-tight text-text"
                         >
-                            Moments worth{" "}
-                            <span className="italic text-pink">sharing.</span>
+                            Classical
                         </h2>
                         <p className="mt-3 max-w-xl leading-relaxed text-muted">
-                            See what is happening at Kala Mandir, from student showcases to studio events.
+                            Explore classical and semi-classical dance performances at Kala Mandir.
                         </p>
                     </div>
                     <Link
@@ -61,13 +74,13 @@ export default function HomeEventsSection() {
                         Events could not be loaded: {error}
                     </p>
                 ) : events.length ? (
-                    <ul className="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+                    <ul className="mt-10 grid gap-7 sm:grid-cols-2">
                         {events.map((event) => (
                             <li key={event._id}>
                                 <Link
                                     to={`/events/${event._id}`}
                                     className="group block h-full rounded-[18px] border border-rule bg-white p-3 shadow-[0_18px_45px_-34px_rgba(53,21,54,0.45)] transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
-                                    aria-label={`View ${event.title} event`}
+                                    aria-label={`View ${event.styleLabel} dance performance event`}
                                 >
                                     <div className="overflow-hidden rounded-[12px] bg-plum">
                                         {event.type === "video" ? (
@@ -92,10 +105,10 @@ export default function HomeEventsSection() {
                                     <div className="flex items-start justify-between gap-4 px-2 pb-2 pt-5">
                                         <div>
                                             <p className="eyebrow text-rose">
-                                                {event.categoryId?.name || "Kala Mandir event"}
+                                                {event.categoryId?.name || "Dance"}
                                             </p>
                                             <h3 className="mt-2 font-display text-2xl leading-tight text-text group-hover:text-rose">
-                                                {event.title}
+                                                {event.styleLabel}
                                             </h3>
                                             {event.description && (
                                                 <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
@@ -116,9 +129,9 @@ export default function HomeEventsSection() {
                     </ul>
                 ) : (
                     <div className="mt-10 rounded-[18px] border border-dashed border-rule bg-white/70 px-6 py-10 text-center">
-                        <h3 className="font-display text-2xl text-text">Events are on the way.</h3>
+                        <h3 className="font-display text-2xl text-text">Dance performances are on the way.</h3>
                         <p className="mt-2 text-sm text-muted">
-                            Check back soon for updates from the studio.
+                            Check back soon for classical and semi-classical performances.
                         </p>
                     </div>
                 )}

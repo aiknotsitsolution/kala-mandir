@@ -56,6 +56,19 @@ const artMosaic = [
     ...editorialImages.artDetail,
     ...galleryItems.filter((artwork) => artwork.id === "km-artwork-07"),
 ];
+const paintingCraftMosaic = [
+    ...galleryItems.filter((artwork) =>
+        ["km-artwork-02", "km-artwork-12", "km-artwork-14", "km-artwork-15"].includes(artwork.id),
+    ),
+    {
+        id: "artcraft-relief",
+        src: "/assets/institute/artcraft2.jpg",
+        alt: "Hand-built clay relief of a woman carrying a pot in a framed design",
+        width: 768,
+        height: 1024,
+        status: "institute",
+    },
+];
 
 export default function ClassesSection({ artOnly = false, showArtDetail = true }) {
     const visibleClasses = artOnly ? classes.slice(0, 2) : classes;
@@ -174,6 +187,12 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                 >
                     {visibleClasses.map((item, index) => {
                         const imageRight = index % 2 === 1;
+                        const artworkMosaic =
+                            item.id === "art-drawing"
+                                ? artMosaic
+                                : item.id === "painting-craft"
+                                  ? paintingCraftMosaic
+                                  : null;
                         return (
                             <RevealItem
                                 key={item.id}
@@ -187,13 +206,17 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                                     className={imageRight ? "lg:order-2" : undefined}
                                 >
                                     <MediaMask className="rounded-[20px]">
-                                        {item.id === "art-drawing" ? (
+                                        {artworkMosaic ? (
                                             <div
                                                 role="group"
-                                                aria-label="A selection of Kala Mandir student artwork"
+                                                aria-label={
+                                                    item.id === "art-drawing"
+                                                        ? "A selection of Kala Mandir student drawings"
+                                                        : "A selection of Kala Mandir student paintings and craft"
+                                                }
                                                 className="grid aspect-[4/3] grid-cols-6 grid-rows-2 gap-2 rounded-[20px] bg-blossom p-2.5 sm:gap-3 sm:p-3"
                                             >
-                                                {artMosaic.map(
+                                                {artworkMosaic.map(
                                                     (artwork, artworkIndex) => (
                                                         <figure
                                                             key={artwork.id}
@@ -333,31 +356,6 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                         );
                     })}
                 </RevealGroup>
-
-
-                {/* ── Enquiry panel: a clear next step after browsing ── */}
-                {!artOnly && (
-                    <Reveal className="mt-16 lg:mt-24">
-                        <div className="flex flex-col items-start justify-between gap-6 rounded-[24px] bg-blossom px-7 py-8 sm:flex-row sm:items-center sm:px-10 sm:py-10">
-                            <div className="max-w-xl">
-                                <h3 className="font-display text-[1.5rem] leading-tight text-text sm:text-[1.75rem]">
-                                    Not sure which class to start with?
-                                </h3>
-                                <p className="mt-2 text-[1rem] leading-[1.65] text-muted">
-                                    Tell us who it is for and their age. We will suggest a
-                                    good place to begin.
-                                </p>
-                            </div>
-                            <Link
-                                to="/contact#enquiry"
-                                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-rose px-6 py-3 text-[15px] font-medium text-white transition-colors hover:bg-pink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
-                            >
-                                Ask about classes
-                                <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
-                            </Link>
-                        </div>
-                    </Reveal>
-                )}
             </div>
 
             {/* ── Art detail: gallery-style spread ── */}
