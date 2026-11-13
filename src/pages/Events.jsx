@@ -1,33 +1,30 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { fetchApi } from "@/lib/api";
+import { fetchEvents, fetchEventCategories } from "@/store/eventsSlice";
 
 export default function Events() {
-    const [events, setEvents] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const dispatch = useDispatch();
+    const events = useSelector((state) => state.events.items);
+    const eventsStatus = useSelector((state) => state.events.status);
+    const eventsError = useSelector((state) => state.events.error);
+    const categories = useSelector((state) => state.events.categories);
+    const categoriesStatus = useSelector((state) => state.events.categoriesStatus);
+    const categoriesError = useSelector((state) => state.events.categoriesError);
     const [category, setCategory] = useState("all");
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
 
     useEffect(() => {
-        const controller = new AbortController();
-        Promise.all([
-            fetchApi("/events", { signal: controller.signal }),
-            fetchApi("/event-categories", { signal: controller.signal }),
-        ])
-            .then(([eventData, categoryData]) => {
-                setEvents(eventData);
-                setCategories(categoryData);
-            })
-            .catch((fetchError) => {
-                if (fetchError.name !== "AbortError") setError(fetchError.message);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) setLoading(false);
-            });
-        return () => controller.abort();
-    }, []);
+        dispatch(fetchEvents());
+        dispatch(fetchEventCategories());
+    }, [dispatch]);
+
+    const loading =
+        eventsStatus === "idle" ||
+        eventsStatus === "loading" ||
+        categoriesStatus === "idle" ||
+        categoriesStatus === "loading";
+    const error = eventsError || categoriesError;
 
     const visibleEvents =
         category === "all"

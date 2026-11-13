@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,6 +20,13 @@ import { contactLinks, siteConfig } from "@/data/siteConfig";
 import { cn } from "@/lib/utils";
 import { postApi } from "@/lib/api";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import {
+    resetContactFormStatus,
+    setContactFormError,
+    submissionSavedWithEmailError,
+    submissionStarted,
+    submissionSucceeded,
+} from "@/store/contactFormSlice";
 
 /* -------------------------------------------------------------------------- */
 /* Schema                                                                      */
@@ -80,9 +88,8 @@ export default function EnquiryForm({ mapLeft = false }) {
     const reduce = useReducedMotion();
     const { state: routeState } = useLocation();
     const formStartedAt = useRef(null);
-
-    const [status, setStatus] = useState("idle"); // idle | submitting | submitted | saved-email-error | error
-    const [submitError, setSubmitError] = useState("");
+    const dispatch = useDispatch();
+    const { status, submitError } = useSelector((state) => state.contactForm);
 
     const {
         register,
@@ -102,6 +109,10 @@ export default function EnquiryForm({ mapLeft = false }) {
         },
     });
 
+    useEffect(() => {
+        dispatch(resetContactFormStatus());
+    }, [dispatch]);
+
     // A class card can pre-select the interest before the visitor arrives.
     useEffect(() => {
         const routeInterest = routeState?.interest;
@@ -120,7 +131,7 @@ export default function EnquiryForm({ mapLeft = false }) {
     }, [routeState, setValue]);
 
     const onInvalid = (formErrors) => {
-        setStatus("idle");
+        dispatch(resetContactFormStatus());
         const firstError = Object.values(formErrors)[0];
         toast.error(firstError?.message || "Please check the form and try again.");
     };
@@ -138,38 +149,35 @@ export default function EnquiryForm({ mapLeft = false }) {
             Date.now() - formStartedAt.current < siteConfig.enquiry.minFillMs
         ) {
             const message = "Please take a moment to review your enquiry before submitting.";
-            setStatus("error");
-            setSubmitError(message);
+            dispatch(setContactFormError(message));
             toast.error(message);
             return;
         }
         // Do not leave autofilled honeypot submissions looking like a silent failure.
         if (values.company) {
             const message = "Your enquiry could not be verified. Please check the form and try again.";
-            setStatus("error");
-            setSubmitError(message);
+            dispatch(setContactFormError(message));
             toast.error(message);
             return;
         }
 
+        dispatch(submissionStarted());
         try {
-            setStatus("submitting");
-            setSubmitError("");
             const result = await postApi("/contact/enquiries", values);
             if (!result?.id) {
                 throw new Error("Your enquiry was not saved. Please try again.");
             }
             if (result?.emailSent === false) {
-                setStatus("saved-email-error");
+                dispatch(submissionSavedWithEmailError());
                 toast.warning("Your enquiry was saved, but the email notification could not be sent.");
                 return;
             }
-            setStatus("submitted");
+            dispatch(submissionSucceeded());
             toast.success("Your enquiry has been submitted successfully.");
         } catch (error) {
-            setStatus("error");
-            setSubmitError(error.message);
-            toast.error(error.message || "Could not submit your enquiry. Please try again.");
+            const message = error.message || "Could not submit your enquiry. Please try again.";
+            dispatch(setContactFormError(message));
+            toast.error(message);
         }
     };
 

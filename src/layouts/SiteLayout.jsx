@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -27,7 +27,18 @@ export default function SiteLayout() {
       <RouteScrollManager />
       <ScrollProgress />
       <Navbar />
-      <Outlet />
+      <Suspense
+        fallback={
+          <main
+            id="main"
+            className="shell flex min-h-[55vh] items-center justify-center py-20"
+          >
+            <p className="text-muted" role="status">Loading page...</p>
+          </main>
+        }
+      >
+        <Outlet />
+      </Suspense>
       <Footer />
       <WhatsAppButton />
     </>

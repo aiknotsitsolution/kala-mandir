@@ -1,28 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { fetchApi } from "@/lib/api";
+import { fetchEventDetails } from "@/store/eventsSlice";
 
 export default function EventDetail() {
     const { id } = useParams();
-    const [event, setEvent] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const dispatch = useDispatch();
+    const detail = useSelector((state) => state.events.details[id]);
+    const event = detail?.event;
+    const loading = !detail || detail.status === "loading";
+    const error = detail?.error || "";
 
     useEffect(() => {
-        const controller = new AbortController();
-        setLoading(true);
-        setError("");
-        fetchApi(`/events/${encodeURIComponent(id)}`, { signal: controller.signal })
-            .then(setEvent)
-            .catch((fetchError) => {
-                if (fetchError.name !== "AbortError") setError(fetchError.message);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) setLoading(false);
-            });
-        return () => controller.abort();
-    }, [id]);
+        dispatch(fetchEventDetails(id));
+    }, [dispatch, id]);
 
     return (
         <main id="main">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Camera, ChevronLeft, ChevronRight, Palette, Play, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import SectionHeading from "@/components/SectionHeading";
 import SmartImage from "@/components/SmartImage";
 import Magnetic from "@/components/Magnetic";
@@ -14,7 +15,7 @@ import {
 } from "@/data/gallery";
 import { cn } from "@/lib/utils";
 import { ease } from "@/lib/motion";
-import { fetchApi } from "@/lib/api";
+import { fetchGalleryCategories, fetchGalleryMedia } from "@/store/gallerySlice";
 
 /**
  * ArtGallery — THE section the page is built around.
@@ -65,6 +66,7 @@ const ACCENTS = {
 };
 
 const PAGE_SIZE = 21;
+const EMPTY_MEDIA_STATE = { items: [], status: "idle", error: "" };
 const danceShowcase = editorialImages.danceShowcase;
 const GALLERY_CONTENT = [
     {
@@ -88,19 +90,28 @@ const GALLERY_CONTENT = [
 ];
 
 export default function ArtGallery({ artOnly = false }) {
-    const [categories, setCategories] = useState([]);
+    const dispatch = useDispatch();
+    const categories = useSelector((state) => state.gallery.categories);
+    const categoriesStatus = useSelector((state) => state.gallery.categoriesStatus);
+    const categoryError = useSelector((state) => state.gallery.categoriesError);
     const [selectedCategoryId, setSelectedCategoryId] = useState("");
     const [selectedSubcategory, setSelectedSubcategory] = useState("");
     const [mediaType, setMediaType] = useState("all");
-    const [filtered, setFiltered] = useState([]);
-    const [categoriesLoading, setCategoriesLoading] = useState(true);
-    const [mediaLoading, setMediaLoading] = useState(false);
-    const [categoryError, setCategoryError] = useState("");
-    const [mediaError, setMediaError] = useState("");
     const [openIndex, setOpenIndex] = useState(null);
     const [openVideo, setOpenVideo] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const reduce = useReducedMotion();
+    const mediaQueryKey = `${selectedCategoryId || "all"}::${selectedSubcategory || ""}`;
+    const mediaState = useSelector(
+        (state) => state.gallery.mediaByQuery[mediaQueryKey] || EMPTY_MEDIA_STATE,
+    );
+    const filtered = mediaState.items;
+    const categoriesLoading = categoriesStatus === "idle" || categoriesStatus === "loading";
+    const categoryRequiresSubcategory = selectedCategoryId && !selectedSubcategory;
+    const mediaLoading =
+        !categoryRequiresSubcategory &&
+        (mediaState.status === "idle" || mediaState.status === "loading");
+    const mediaError = mediaState.error;
     const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
     const lightboxItems = filtered.filter((item) => item.type !== "video");
     const visibleItems = filtered.filter((item) => mediaType === "all" || item.type === mediaType);
@@ -112,73 +123,16 @@ export default function ArtGallery({ artOnly = false }) {
     }, [currentPage, pageCount]);
 
     useEffect(() => {
-        const controller = new AbortController();
-        setCategoriesLoading(true);
-        fetchApi("/gallery/categories", { signal: controller.signal })
-            .then((result) => {
-                const nextCategories = result.map((category) => ({
-                    ...category,
-                    id: category._id,
-                    subcategories: category.subcategories || [],
-                }));
-                setCategories(nextCategories);
-                setCategoryError("");
-            })
-            .catch((error) => {
-                if (error.name !== "AbortError") setCategoryError(error.message);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) setCategoriesLoading(false);
-            });
-        return () => controller.abort();
-    }, []);
+        dispatch(fetchGalleryCategories());
+    }, [dispatch]);
 
     useEffect(() => {
-        const controller = new AbortController();
-        const params = new URLSearchParams();
-        if (selectedCategoryId) params.set("categoryId", selectedCategoryId);
-        if (selectedCategoryId && !selectedSubcategory) {
-            setFiltered([]);
-            setMediaError("");
-            setMediaLoading(false);
-            return undefined;
-        }
-        if (selectedCategoryId && selectedSubcategory !== "__all__") {
-            params.set("subcategory", selectedSubcategory);
-        }
-        setMediaLoading(true);
-        setFiltered([]);
-        setMediaError("");
-        const query = params.toString();
-        fetchApi(`/gallery/media${query ? `?${query}` : ""}`, { signal: controller.signal })
-            .then((result) => {
-                const mediaItems = result.map((item) => ({
-                    id: item.id,
-                    type: item.type,
-                    src: item.type === "video" ? item.url : item.thumbnailUrl || item.url,
-                    poster: item.thumbnailUrl,
-                    fallback: item.url,
-                    alt: item.title,
-                    caption: item.title,
-                    category: item.categoryName,
-                    subcategory: item.subcategory,
-                    width: 900,
-                    height: 1125,
-                    status: "institute",
-                }));
-                setFiltered([
-                    ...mediaItems.filter((item) => item.type !== "video"),
-                    ...mediaItems.filter((item) => item.type === "video"),
-                ]);
-            })
-            .catch((error) => {
-                if (error.name !== "AbortError") setMediaError(error.message);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) setMediaLoading(false);
-            });
-        return () => controller.abort();
-    }, [selectedCategoryId, selectedSubcategory]);
+        if (selectedCategoryId && !selectedSubcategory) return;
+        dispatch(fetchGalleryMedia({
+            categoryId: selectedCategoryId,
+            subcategory: selectedSubcategory,
+        }));
+    }, [dispatch, selectedCategoryId, selectedSubcategory]);
 
     useEffect(() => {
         if (!openVideo) return undefined;

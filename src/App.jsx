@@ -1,13 +1,15 @@
+import { lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "@/pages/Home";
-import About from "@/pages/About";
-import Art from "@/pages/Art";
-import Contact from "@/pages/Contact";
-import Dance from "@/pages/Dance";
-import Events from "@/pages/Events";
-import EventDetail from "@/pages/EventDetail";
-import Gallery from "@/pages/Gallery";
 import SiteLayout from "@/layouts/SiteLayout";
+
+const Home = lazy(() => import("@/pages/Home"));
+const About = lazy(() => import("@/pages/About"));
+const Art = lazy(() => import("@/pages/Art"));
+const Contact = lazy(() => import("@/pages/Contact"));
+const Dance = lazy(() => import("@/pages/Dance"));
+const Events = lazy(() => import("@/pages/Events"));
+const EventDetail = lazy(() => import("@/pages/EventDetail"));
+const Gallery = lazy(() => import("@/pages/Gallery"));
 
 export default function App() {
     return (

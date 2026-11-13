@@ -1,39 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { fetchApi } from "@/lib/api";
+import { fetchEvents } from "@/store/eventsSlice";
 
 export default function HomeEventsSection() {
-    const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const dispatch = useDispatch();
+    const allEvents = useSelector((state) => state.events.items);
+    const eventsStatus = useSelector((state) => state.events.status);
+    const error = useSelector((state) => state.events.error);
 
     useEffect(() => {
-        const controller = new AbortController();
-        fetchApi("/events", { signal: controller.signal })
-            .then((result) => {
-                const stageEvents = result.filter((event) =>
-                    event.title?.trim().toLowerCase().startsWith("classical stage dance performance"),
-                );
-                const classicalEvent = stageEvents.find(
-                    (event) => event.title.trim().toLowerCase() === "classical stage dance performance",
-                );
-                const semiClassicalEvent = stageEvents.find((event) => event !== classicalEvent);
-                setEvents([
-                    ...(classicalEvent ? [{ ...classicalEvent, styleLabel: "Classical" }] : []),
-                    ...(semiClassicalEvent
-                        ? [{ ...semiClassicalEvent, styleLabel: "Semi-Classical" }]
-                        : []),
-                ]);
-            })
-            .catch((fetchError) => {
-                if (fetchError.name !== "AbortError") setError(fetchError.message);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) setLoading(false);
-            });
-        return () => controller.abort();
-    }, []);
+        dispatch(fetchEvents());
+    }, [dispatch]);
+
+    const stageEvents = allEvents.filter((event) =>
+        event.title?.trim().toLowerCase().startsWith("classical stage dance performance"),
+    );
+    const classicalEvent = stageEvents.find(
+        (event) => event.title.trim().toLowerCase() === "classical stage dance performance",
+    );
+    const semiClassicalEvent = stageEvents.find((event) => event !== classicalEvent);
+    const events = [
+        ...(classicalEvent ? [{ ...classicalEvent, styleLabel: "Classical" }] : []),
+        ...(semiClassicalEvent
+            ? [{ ...semiClassicalEvent, styleLabel: "Semi-Classical" }]
+            : []),
+    ];
+    const loading = eventsStatus === "idle" || eventsStatus === "loading";
 
     return (
         <section
