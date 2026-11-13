@@ -110,7 +110,7 @@ export default function IntroSection({
         >
             <div className="shell">
                 {showAcademyCards && (
-                    <div className="mb-14 grid grid-cols-1 items-stretch gap-4 sm:mb-16 sm:grid-cols-2 sm:gap-5 lg:mb-20">
+                    <div className="mb-8 grid grid-cols-1 items-stretch gap-4 sm:mb-10 sm:grid-cols-2 sm:gap-5 lg:mb-12">
                         {academyCards.map((card, index) => (
                             <Reveal
                                 key={card.title}
@@ -162,9 +162,9 @@ export default function IntroSection({
                 )}
 
                 {/* ========== NEW DANCE CLASSES SECTION ========== */}
-                <div className="mb-16 lg:mb-20">
+                <div className={showIntroduction ? "mb-12 lg:mb-16" : ""}>
                     <Reveal delay={0.05}>
-                        <div className="mb-8 flex flex-col gap-2 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+                        <div className="mb-6 flex flex-col gap-2 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <span className="eyebrow text-muted">Dance Styles</span>
                                 <h2 className="mt-2 font-display text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-text">

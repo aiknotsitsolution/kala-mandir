@@ -132,6 +132,15 @@
 
   .home-page > #art {
     padding-top: 0;
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  .home-page > #home-events {
+    padding-block: clamp(3rem, 5vw, 4.5rem);
+  }
+
+  .home-page > #enquiry {
+    padding-top: clamp(2rem, 4vw, 3rem);
   }
 
   .about-page > #about {

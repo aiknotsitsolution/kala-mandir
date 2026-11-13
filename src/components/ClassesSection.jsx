@@ -162,7 +162,7 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
 
                 {/* ── Reassurance row (answers the first-time visitor's doubts) ── */}
                 {!artOnly && (
-                    <RevealGroup className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:mt-16">
+                    <RevealGroup className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:mt-10">
                         {reassurances.map(({ icon: Icon, title, text }) => (
                             <div
                                 key={title}
@@ -183,7 +183,7 @@ export default function ClassesSection({ artOnly = false, showArtDetail = true }
                 {/* ── Alternating class features ── */}
                 <RevealGroup
                     amount={0.01}
-                    className="mt-14 space-y-14 lg:mt-20 lg:space-y-24"
+                    className="mt-10 space-y-10 lg:mt-14 lg:space-y-16"
                 >
                     {visibleClasses.map((item, index) => {
                         const imageRight = index % 2 === 1;

@@ -37,6 +37,7 @@ export default function HomeEventsSection() {
 
     return (
         <section
+            id="home-events"
             data-tone="light"
             aria-labelledby="home-events-title"
             className="section bg-blossom"
@@ -74,7 +75,7 @@ export default function HomeEventsSection() {
                         Events could not be loaded: {error}
                     </p>
                 ) : events.length ? (
-                    <ul className="mt-10 grid gap-7 sm:grid-cols-2">
+                    <ul className="mt-8 grid gap-6 sm:grid-cols-2">
                         {events.map((event) => (
                             <li key={event._id}>
                                 <Link

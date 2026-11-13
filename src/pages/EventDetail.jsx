@@ -61,7 +61,7 @@ export default function EventDetail() {
                                 />
                             ) : (
                                 <img
-                                    src={event.thumbnailUrl || event.url}
+                                    src={event.url || event.thumbnailUrl}
                                     alt={event.title}
                                     fetchPriority="high"
                                     className="max-h-[75vh] w-full rounded-[18px] bg-white object-cover object-center"
