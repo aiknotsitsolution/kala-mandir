@@ -247,6 +247,9 @@ export default function IntroSection({
                         ))}
                     </div>
                 </div>
+
+
+                
                 {/* ========== END DANCE CLASSES SECTION ========== */}
 
                 {showIntroduction && (

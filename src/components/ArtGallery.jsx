@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowUpRight, ChevronLeft, ChevronRight, Play, X } from "lucide-react";
+import { ArrowUpRight, Camera, ChevronLeft, ChevronRight, Palette, Play, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import SectionHeading from "@/components/SectionHeading";
 import SmartImage from "@/components/SmartImage";
@@ -64,14 +64,28 @@ const ACCENTS = {
     },
 };
 
-const CROPS = {
-    square: "aspect-square",
-    portrait: "aspect-[4/5]",
-    landscape: "aspect-[4/3]",
-};
-
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 21;
 const danceShowcase = editorialImages.danceShowcase;
+const GALLERY_CONTENT = [
+    {
+        title: "Student artwork",
+        description: "Drawings, paintings and handmade creative work by our students.",
+        icon: Palette,
+        iconClass: "bg-rose/10 text-rose",
+    },
+    {
+        title: "Dance & class photos",
+        description: "Creative moments from Kala Mandir classes and studio practice.",
+        icon: Camera,
+        iconClass: "bg-violet/10 text-violet",
+    },
+    {
+        title: "Videos",
+        description: "Dance and creative moments captured in motion.",
+        icon: Play,
+        iconClass: "bg-pink/10 text-pink",
+    },
+];
 
 export default function ArtGallery({ artOnly = false }) {
     const [categories, setCategories] = useState([]);
@@ -138,20 +152,24 @@ export default function ArtGallery({ artOnly = false }) {
         const query = params.toString();
         fetchApi(`/gallery/media${query ? `?${query}` : ""}`, { signal: controller.signal })
             .then((result) => {
-                setFiltered(result.map((item) => ({
+                const mediaItems = result.map((item) => ({
                     id: item.id,
                     type: item.type,
                     src: item.type === "video" ? item.url : item.thumbnailUrl || item.url,
+                    poster: item.thumbnailUrl,
                     fallback: item.url,
                     alt: item.title,
                     caption: item.title,
                     category: item.categoryName,
                     subcategory: item.subcategory,
-                    width: 1200,
-                    height: 900,
-                    crop: item.type === "video" ? "landscape" : "portrait",
+                    width: 900,
+                    height: 1125,
                     status: "institute",
-                })));
+                }));
+                setFiltered([
+                    ...mediaItems.filter((item) => item.type !== "video"),
+                    ...mediaItems.filter((item) => item.type === "video"),
+                ]);
             })
             .catch((error) => {
                 if (error.name !== "AbortError") setMediaError(error.message);
@@ -185,7 +203,8 @@ export default function ArtGallery({ artOnly = false }) {
         <section
             id="gallery"
             data-tone="light"
-            aria-labelledby="gallery-title"
+            aria-labelledby={artOnly ? "gallery-title" : undefined}
+            aria-label={artOnly ? undefined : "Student gallery"}
             className="section relative bg-blossom pt-0"
         >
             <div
@@ -220,59 +239,63 @@ export default function ArtGallery({ artOnly = false }) {
                 </motion.div>
             </div>
 
-            {/* Decorative corner paint-swatch — quiet, aria-hidden */}
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute right-0 top-0 hidden select-none lg:block"
-            >
-                <div className="flex gap-2 pt-10">
-                    <span className="h-16 w-2.5 rounded-full bg-pink/70" />
-                    <span className="h-16 w-2.5 rounded-full bg-rose/70" />
-                    <span className="h-16 w-2.5 rounded-full bg-gold/80" />
-                    <span className="h-16 w-2.5 rounded-full bg-violet/60" />
-                </div>
-            </div>
-
             <div className="shell">
+                {!artOnly && (
+                    <section aria-labelledby="gallery-overview-title" className="mb-10">
+                        <div className="mb-5">
+                            <p className="eyebrow text-rose">A glimpse of our studio</p>
+                            <h2
+                                id="gallery-overview-title"
+                                className="mt-2 font-display text-[clamp(1.8rem,4vw,2.7rem)] leading-tight text-text"
+                            >
+                                What's in the gallery?
+                            </h2>
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {GALLERY_CONTENT.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <article
+                                        key={item.title}
+                                        className="rounded-2xl border border-rule bg-white/75 p-5 transition-shadow hover:shadow-[0_14px_35px_-28px_rgba(53,21,54,0.55)] sm:p-6"
+                                    >
+                                        <span className={cn("mb-4 grid h-11 w-11 place-items-center rounded-xl", item.iconClass)}>
+                                            <Icon aria-hidden="true" className="h-5 w-5" />
+                                        </span>
+                                        <h3 className="font-display text-xl text-text">{item.title}</h3>
+                                        <p className="mt-2 text-sm leading-relaxed text-muted">
+                                            {item.description}
+                                        </p>
+                                    </article>
+                                );
+                            })}
+                        </div>
+                    </section>
+                )}
+
                 {/* Header */}
-                <div className="flex flex-col gap-8">
-                    <SectionHeading
-                        id="gallery-title"
-                        number="04"
-                        eyebrow={artOnly ? "Art & craft exhibition" : "Student exhibition"}
-                        title={
-                            artOnly ? (
+                <div className="flex flex-col gap-12">
+                    {artOnly && (
+                        <SectionHeading
+                            id="gallery-title"
+                            number="04"
+                            eyebrow="Art & craft exhibition"
+                            title={
                                 <>
                                     Ideas in colour,{" "}
                                     <span className="italic text-pink">made by hand.</span>
                                 </>
-                            ) : (
-                                <>
-                                    Made in{" "}
-                                    <span className="italic text-pink">our classes</span>,
-                                    kept with pride.
-                                </>
-                            )
-                        }
-                        standfirst={
-                            artOnly
-                                ? "Explore student drawings, paintings and craft projects from Kala Mandir. Each piece reflects a different way of looking closely, working with colour and making something by hand."
-                                : "Browse student artwork, dance photography and videos from Kala Mandir classes."
-                        }
-                        className="max-w-[38rem]"
-                    >
-                        <BrushStroke className="mt-7 h-4 w-56 text-pink/70" />
-                    </SectionHeading>
+                            }
+                            standfirst="Explore student drawings, paintings and craft projects from Kala Mandir. Each piece reflects a different way of looking closely, working with colour and making something by hand."
+                            className="max-w-[38rem]"
+                        >
+                            <BrushStroke className="mt-7 h-4 w-56 text-pink/70" />
+                        </SectionHeading>
+                    )}
 
                     <Reveal delay={0.1}>
                         <div className="rounded-[20px] border border-rule bg-white/85 p-4 shadow-[0_18px_45px_-34px_rgba(53,21,54,0.45)] sm:p-6">
                             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                                <div>
-                                    <p className="eyebrow text-rose">Browse the collection</p>
-                                    <p className="mt-1 text-sm text-muted">
-                                        Showing {visibleItems.length} {mediaType === "all" ? "photos and videos" : mediaType === "photo" ? "photos" : "videos"}
-                                    </p>
-                                </div>
                                 <div className="flex rounded-full border border-rule bg-blossom/50 p-1" role="group" aria-label="Filter gallery by media type">
                                     {[
                                         { id: "all", label: "All" },
@@ -299,6 +322,12 @@ export default function ArtGallery({ artOnly = false }) {
                                             </span>
                                         </button>
                                     ))}
+                                </div>
+                                <div className="ml-auto w-fit text-right">
+                                    <p className="eyebrow text-rose">Browse the collection</p>
+                                    <p className="mt-1 text-sm text-muted">
+                                        Showing {visibleItems.length} {mediaType === "all" ? "photos and videos" : mediaType === "photo" ? "photos" : "videos"}
+                                    </p>
                                 </div>
                             </div>
                             <div className="grid gap-4 sm:grid-cols-2">
@@ -408,25 +437,30 @@ export default function ArtGallery({ artOnly = false }) {
                                     className="group mb-5 break-inside-avoid lg:mb-6"
                                 >
                                     {item.type === "video" ? (
-                                        <div className="relative overflow-hidden rounded-[14px] bg-plum">
+                                        <button
+                                            type="button"
+                                            onClick={() => setOpenVideo(item)}
+                                            aria-label={`Play ${item.caption}`}
+                                            className="relative block w-full overflow-hidden rounded-[14px] bg-plum text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink focus-visible:ring-offset-2 focus-visible:ring-offset-blossom"
+                                        >
                                             <video
                                                 src={item.src}
-                                                aria-label={item.alt}
-                                                controls
+                                                poster={item.poster}
+                                                aria-hidden="true"
+                                                muted
                                                 playsInline
                                                 preload="metadata"
-                                                className="tile-lift aspect-[4/5] w-full object-cover"
+                                                className="tile-lift aspect-[4/5] w-full object-cover transition-transform duration-[650ms] group-hover:scale-[1.05] motion-reduce:transform-none"
                                             />
-                                            <button
-                                                type="button"
-                                                onClick={() => setOpenVideo(item)}
-                                                aria-label={`Watch ${item.caption} in a larger player`}
-                                                className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-full bg-charcoal/80 px-3.5 py-2.5 text-xs font-medium text-white shadow-lg backdrop-blur transition hover:bg-rose focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                                            <span
+                                                aria-hidden="true"
+                                                className="pointer-events-none absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/45 via-transparent to-black/10"
                                             >
-                                                <Play aria-hidden="true" className="h-3.5 w-3.5 fill-current" />
-                                                Watch separately
-                                            </button>
-                                        </div>
+                                                <span className="grid h-14 w-14 place-items-center rounded-full border border-white/70 bg-charcoal/55 text-white shadow-lg backdrop-blur-sm transition-transform group-hover:scale-105">
+                                                    <Play className="ml-1 h-6 w-6 fill-current" />
+                                                </span>
+                                            </span>
+                                        </button>
                                     ) : (
                                         <button
                                             type="button"
@@ -437,7 +471,7 @@ export default function ArtGallery({ artOnly = false }) {
                                             <SmartImage
                                                 image={item}
                                                 sizes="(max-width: 639px) 92vw, (max-width: 1023px) 46vw, 30vw"
-                                                className={cn("tile-lift w-full", CROPS[item.crop] || "aspect-[4/5]")}
+                                                className="tile-lift w-full aspect-[4/5]"
                                                 position={item.position || "50% 45%"}
                                                 imgClassName="transition-transform duration-[650ms] ease-out group-hover:scale-[1.05] motion-reduce:transform-none"
                                             />
@@ -499,30 +533,30 @@ export default function ArtGallery({ artOnly = false }) {
                 {pageCount > 1 && (
                     <nav
                         aria-label="Gallery pages"
-                        className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-rule bg-white/70 px-4 py-4 sm:flex-row sm:px-6"
+                        className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-5"
                     >
-                        <p className="text-sm text-muted" aria-live="polite">
+                        <p className="text-xs text-muted" aria-live="polite">
                             Showing {(currentPage - 1) * PAGE_SIZE + 1}–
                             {Math.min(currentPage * PAGE_SIZE, visibleItems.length)} of {visibleItems.length}
                         </p>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 rounded-full border border-rule bg-white/80 p-1 shadow-sm">
                             <button
                                 type="button"
                                 onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                                 disabled={currentPage === 1}
-                                className="inline-flex min-h-10 items-center gap-1 rounded-full border border-rule px-4 text-sm text-text transition hover:border-rose hover:text-rose disabled:cursor-not-allowed disabled:opacity-40"
+                                className="inline-flex min-h-9 items-center gap-1 rounded-full px-3 text-xs text-text transition hover:bg-blossom hover:text-rose disabled:cursor-not-allowed disabled:opacity-40"
                             >
                                 <ChevronLeft aria-hidden="true" className="h-4 w-4" />
                                 Previous
                             </button>
-                            <span className="min-w-20 text-center text-sm font-medium text-text" aria-label={`Page ${currentPage} of ${pageCount}`}>
+                            <span className="min-w-16 text-center text-xs font-medium tabular-nums text-text" aria-label={`Page ${currentPage} of ${pageCount}`}>
                                 {currentPage} / {pageCount}
                             </span>
                             <button
                                 type="button"
                                 onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))}
                                 disabled={currentPage === pageCount}
-                                className="inline-flex min-h-10 items-center gap-1 rounded-full border border-rule px-4 text-sm text-text transition hover:border-rose hover:text-rose disabled:cursor-not-allowed disabled:opacity-40"
+                                className="inline-flex min-h-9 items-center gap-1 rounded-full px-3 text-xs text-text transition hover:bg-blossom hover:text-rose disabled:cursor-not-allowed disabled:opacity-40"
                             >
                                 Next
                                 <ChevronRight aria-hidden="true" className="h-4 w-4" />
@@ -532,7 +566,7 @@ export default function ArtGallery({ artOnly = false }) {
                 )}
 
                 {/* Enquiry CTA under the exhibition */}
-                <RevealGroup className="mt-14 flex flex-col items-start gap-6 border-t border-rule pt-8 sm:flex-row sm:items-center sm:justify-between">
+                <RevealGroup className={cn("flex flex-col items-start gap-6 border-t border-rule pt-8 sm:flex-row sm:items-center sm:justify-between", pageCount > 1 ? "mt-10" : "mt-14")}>
                     <p className="max-w-[30rem] font-display text-[1.45rem] leading-snug text-text sm:text-[1.7rem]">
                         <SplitText text="Want work like this on your wall?" />
                     </p>
