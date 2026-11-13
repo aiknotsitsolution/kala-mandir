@@ -74,7 +74,7 @@ export default function Footer() {
                     <RevealGroup className="grid grid-cols-1 gap-x-8 gap-y-8 py-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-10 lg:py-10">
                         <RevealItem>
                             <p className="eyebrow text-white/35">Explore</p>
-                            <ul className="mt-3 space-y-2">
+                            <ul className="mt-3 list-disc space-y-2 pl-4 marker:text-gold">
                                 {siteConfig.nav.map((item) => (
                                     <li key={item.href}>
                                         <Link
@@ -90,7 +90,7 @@ export default function Footer() {
 
                         <RevealItem>
                             <p className="eyebrow text-white/35">Classes</p>
-                            <ul className="mt-3 space-y-2">
+                            <ul className="mt-3 list-disc space-y-2 pl-4 marker:text-gold">
                                 {classLinks.map((item) => (
                                     <li key={item.label}>
                                         <Link
@@ -106,8 +106,14 @@ export default function Footer() {
 
                         <RevealItem>
                             <p className="eyebrow text-white/35">Visit</p>
-                            <address className="mt-3 space-y-3 not-italic text-[14px] leading-relaxed text-white/70">
-                                <span className="flex items-start gap-2.5">
+                            <address className="mt-3 not-italic text-[14px] leading-relaxed">
+                                <a
+                                    href={contactLinks.map}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="Open Kala Mandir's address in Google Maps"
+                                    className="flex items-start gap-2.5 text-white/70 transition-colors duration-200 hover:text-white"
+                                >
                                     <MapPin
                                         className="mt-1 h-4 w-4 shrink-0 text-white/40"
                                         aria-hidden="true"
@@ -119,7 +125,7 @@ export default function Footer() {
                                         {siteConfig.address.region}{" "}
                                         {siteConfig.address.postalCode}
                                     </span>
-                                </span>
+                                </a>
                             </address>
                         </RevealItem>
 
