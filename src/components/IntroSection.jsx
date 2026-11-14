@@ -65,6 +65,7 @@ export default function IntroSection({
                 width: 1024,
                 height: 768,
             },
+            detailHref: "/dance#dance-classes",
             surface: "bg-blossom",
             accent: "text-rose",
             button: "bg-rose text-white group-hover:bg-pink",
@@ -79,6 +80,7 @@ export default function IntroSection({
                 width: 768,
                 height: 1024,
             },
+            detailHref: "/dance#dance-classes",
             surface: "bg-lavender",
             accent: "text-violet",
             button: "bg-violet text-white group-hover:bg-rose",
@@ -93,6 +95,7 @@ export default function IntroSection({
                 width: 768,
                 height: 1024,
             },
+            detailHref: "/dance#dance-classes",
             surface: "bg-blush",
             accent: "text-pink",
             button: "bg-pink text-white group-hover:bg-rose",
@@ -194,7 +197,7 @@ export default function IntroSection({
                                 amount={0.08}
                             >
                                 <div
-                                    className={`group flex h-full flex-col overflow-hidden rounded-[18px] border border-white/80 ${card.surface} shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)]`}
+                                    className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[18px] border border-white/80 ${card.surface} shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)]`}
                                 >
                                     {/* Class image */}
                                     <div className="group/media relative aspect-[4/3] w-full overflow-hidden">
@@ -223,6 +226,12 @@ export default function IntroSection({
                                         />
                                     </div>
 
+                                    <Link
+                                        to={card.detailHref}
+                                        aria-label={`View ${card.title} details`}
+                                        className="absolute inset-0 z-0 rounded-[18px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
+                                    />
+
                                     {/* Content */}
                                     <div className="flex flex-1 flex-col p-5 sm:p-6">
                                         <h3 className="font-display text-[1.25rem] leading-tight text-text sm:text-[1.35rem]">
@@ -234,7 +243,7 @@ export default function IntroSection({
 
                                         <Link
                                             to="/contact#enquiry"
-                                            className={`mt-6 inline-flex w-fit items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-medium transition-colors ${card.button}`}
+                                            className={`relative z-10 mt-6 inline-flex w-fit items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-medium transition-colors ${card.button}`}
                                         >
                                             Register Now
                                             <ArrowUpRight

@@ -48,7 +48,7 @@ export default function HomeEventsSection() {
             ) : events.length ? (
                 events.map((event, index) => (
                     <Reveal key={event._id} delay={0.1 + (index + 3) * 0.08} amount={0.08}>
-                        <div className="group flex h-full flex-col overflow-hidden rounded-[18px] border border-white/80 bg-blossom shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)]">
+                        <div className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[18px] border border-white/80 bg-blossom shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)]">
                             <div className="group/media relative aspect-[4/3] w-full overflow-hidden bg-plum">
                                 {event.type === "video" ? (
                                     <video
@@ -69,6 +69,11 @@ export default function HomeEventsSection() {
                                     />
                                 )}
                             </div>
+                            <Link
+                                to={`/events/${event._id}`}
+                                aria-label={`View ${event.styleLabel} performance details`}
+                                className="absolute inset-0 z-0 rounded-[18px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
+                            />
                             <div className="flex flex-1 flex-col p-5 sm:p-6">
                                 <h3 className="font-display text-[1.25rem] leading-tight text-text sm:text-[1.35rem]">
                                     {event.styleLabel}
@@ -83,7 +88,7 @@ export default function HomeEventsSection() {
                                 </p>
                                 <Link
                                     to="/contact#enquiry"
-                                    className="mt-6 inline-flex w-fit items-center gap-1.5 rounded-full bg-rose px-4 py-2.5 text-[12px] font-medium text-white transition-colors hover:bg-pink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
+                                    className="relative z-10 mt-6 inline-flex w-fit items-center gap-1.5 rounded-full bg-rose px-4 py-2.5 text-[12px] font-medium text-white transition-colors hover:bg-pink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
                                 >
                                     Register Now
                                     <ArrowUpRight
