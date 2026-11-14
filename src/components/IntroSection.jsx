@@ -17,6 +17,7 @@ export default function IntroSection({
     showStudioNote = true,
     showAcademyCards = false,
     showIntroduction = true,
+    children,
 }) {
     const { intro } = editorialImages;
 
@@ -105,7 +106,7 @@ export default function IntroSection({
         <section
             id="about"
             data-tone="light"
-            aria-labelledby="intro-title"
+            aria-labelledby={showIntroduction ? "intro-title" : "dance-styles-title"}
             className="section relative bg-paper"
         >
             <div className="shell">
@@ -167,7 +168,10 @@ export default function IntroSection({
                         <div className="mb-6 flex flex-col gap-2 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <span className="eyebrow text-muted">Dance Styles</span>
-                                <h2 className="mt-2 font-display text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-text">
+                                <h2
+                                    id="dance-styles-title"
+                                    className="mt-2 font-display text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1] text-text"
+                                >
                                     Choose your{" "}
                                     <span className="italic text-rose">rhythm</span>
                                 </h2>
@@ -245,6 +249,7 @@ export default function IntroSection({
                                 </div>
                             </Reveal>
                         ))}
+                        {children}
                     </div>
                 </div>
 
@@ -332,6 +337,7 @@ export default function IntroSection({
                     {/* Copy */}
                     <div className="lg:col-span-6 lg:col-start-7">
                         <SectionHeading
+                            id="intro-title"
                             number="01"
                             eyebrow="Introduction"
                             title={

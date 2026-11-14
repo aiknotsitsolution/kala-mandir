@@ -18,8 +18,9 @@ export default function Home() {
                 showStudioNote={false}
                 showAcademyCards
                 showIntroduction={false}
-            />
-            <HomeEventsSection />
+            >
+                <HomeEventsSection />
+            </IntroSection>
             <ClassesSection showArtDetail={false} />
             <EnquiryForm mapLeft />
         </main>
