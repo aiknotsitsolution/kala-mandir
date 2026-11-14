@@ -65,7 +65,6 @@ export default function IntroSection({
                 width: 1024,
                 height: 768,
             },
-            href: "/dance#hiphop",
             surface: "bg-blossom",
             accent: "text-rose",
             button: "bg-rose text-white group-hover:bg-pink",
@@ -80,7 +79,6 @@ export default function IntroSection({
                 width: 768,
                 height: 1024,
             },
-            href: "/dance#bollywood",
             surface: "bg-lavender",
             accent: "text-violet",
             button: "bg-violet text-white group-hover:bg-rose",
@@ -95,7 +93,6 @@ export default function IntroSection({
                 width: 768,
                 height: 1024,
             },
-            href: "/dance",
             surface: "bg-blush",
             accent: "text-pink",
             button: "bg-pink text-white group-hover:bg-rose",
@@ -236,7 +233,7 @@ export default function IntroSection({
                                         </p>
 
                                         <Link
-                                            to={card.href}
+                                            to="/contact#enquiry"
                                             className={`mt-6 inline-flex w-fit items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-medium transition-colors ${card.button}`}
                                         >
                                             Register Now

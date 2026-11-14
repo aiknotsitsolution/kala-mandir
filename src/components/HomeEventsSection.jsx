@@ -82,7 +82,7 @@ export default function HomeEventsSection() {
                                         .join(" ")}
                                 </p>
                                 <Link
-                                    to={`/events/${event._id}`}
+                                    to="/contact#enquiry"
                                     className="mt-6 inline-flex w-fit items-center gap-1.5 rounded-full bg-rose px-4 py-2.5 text-[12px] font-medium text-white transition-colors hover:bg-pink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
                                 >
                                     Register Now
