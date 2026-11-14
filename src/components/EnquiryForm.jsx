@@ -56,6 +56,10 @@ const schema = z.object({
         .trim()
         .min(2, "Please enter your name.")
         .max(80, "That name is a little long — please shorten it."),
+    email: z
+        .string()
+        .trim()
+        .email("Enter a valid email address."),
     phone: z
         .string()
         .trim()
@@ -101,6 +105,7 @@ export default function EnquiryForm({ mapLeft = false }) {
         mode: "onTouched",
         defaultValues: {
             name: "",
+            email: "",
             phone: "",
             interest: "",
             ageGroup: "",
@@ -169,7 +174,7 @@ export default function EnquiryForm({ mapLeft = false }) {
             }
             if (result?.emailSent === false) {
                 dispatch(submissionSavedWithEmailError());
-                toast.warning("Your enquiry was saved, but the email notification could not be sent.");
+                toast.warning("Your enquiry was saved, but we couldn't send both confirmation emails.");
                 return;
             }
             dispatch(submissionSucceeded());
@@ -348,6 +353,26 @@ export default function EnquiryForm({ mapLeft = false }) {
                                         />
                                     </Field>
 
+                                    {/* Email */}
+                                    <Field
+                                        id="email"
+                                        label="Email address"
+                                        required
+                                        error={errors.email?.message}
+                                    >
+                                        <input
+                                            id="email"
+                                            type="email"
+                                            inputMode="email"
+                                            autoComplete="email"
+                                            placeholder="you@example.com"
+                                            className="field"
+                                            aria-invalid={errors.email ? "true" : "false"}
+                                            aria-describedby={errors.email ? "email-error" : undefined}
+                                            {...register("email")}
+                                        />
+                                    </Field>
+
                                     {/* Phone */}
                                     <Field
                                         id="phone"
@@ -452,7 +477,7 @@ export default function EnquiryForm({ mapLeft = false }) {
                                                 key="submitted"
                                                 tone="success"
                                                 title="Your enquiry has been received"
-                                                body="Thank you for contacting Kala Mandir. Your enquiry has been saved, and an email notification has been sent to our team."
+                                                body="Thank you for contacting Kala Mandir. Your enquiry is saved, the team has been notified, and a thank-you email has been sent to you."
                                                 reduce={reduce}
                                             />
                                         )}
@@ -462,7 +487,7 @@ export default function EnquiryForm({ mapLeft = false }) {
                                                 key="saved-email-error"
                                                 tone="warn"
                                                 title="Your enquiry is saved"
-                                                body="Your details are safely saved for the Kala Mandir team in the admin panel, but the email notification could not be sent. Please call or WhatsApp us if you need an immediate response."
+                                                body="Your details are safely saved for the Kala Mandir team, but we couldn't send both confirmation emails. Please call or WhatsApp us if you need an immediate response."
                                                 reduce={reduce}
                                             />
                                         )}

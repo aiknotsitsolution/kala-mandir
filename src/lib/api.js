@@ -1,5 +1,5 @@
 const API_URL = (
-    import.meta.env.VITE_API_URL || "https://kalamandir.online/api"
+    import.meta.env.VITE_API_URL || "http://localhost:8000/api"
 ).replace(/\/+$/, "");
 
 async function requestApi(path, options) {

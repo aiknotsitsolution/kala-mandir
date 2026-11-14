@@ -44,7 +44,7 @@ Restart Vite after changing the proxy target.
 - `/events` — admin-managed Dance, Arts, Yoga and Zumba events
 - `/events/:id` — event details loaded by ID from the backend
 - `/about` — studio introduction and learning approach
-- `/contact` — enquiry form and verified contact details
+- `/contact` — contact message form and verified contact details
 
 Each page has its own focused content, without repeating gallery or studio
 sections within that page. All pages reuse the same navigation, footer, colour
@@ -58,10 +58,13 @@ are supported by the Vite development server and the Vercel rewrite in
   on purpose. Add them only after the institute confirms them in writing.
 - **Business facts are centralised** in `src/data/siteConfig.js` (phone,
   WhatsApp, address, Instagram, Google Maps). Change a fact in one place.
-- **Enquiry form** posts directly to `/api/contact/enquiries`; submissions are
-  saved for the admin panel and trigger an email notification from the backend.
-  The admin Enquiries page refreshes when opened and includes a manual refresh
-  button for new submissions.
+- **Contact form** posts Name, Email, Phone, Subject and Message to
+  `/api/contact/create`; submissions are saved for the admin panel and trigger
+  confirmation and notification emails from the backend. The form requires a
+  Google reCAPTCHA v3 site key in `VITE_RECAPTCHA_SITE_KEY`; configure the
+  matching `RECAPTCHA_SECRET_KEY` on the backend. The secret must never be
+  added to the frontend. The admin Enquiries page refreshes when opened and
+  includes a manual refresh button for new submissions.
 - **Events** are created in the admin panel and stored by the backend; their
   photos are uploaded to ImageKit.
 - API requests use `https://kalamandir.online/api` by default in development
