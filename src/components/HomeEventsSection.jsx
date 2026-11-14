@@ -5,6 +5,13 @@ import { Link } from "react-router-dom";
 import { Reveal } from "@/components/Reveal";
 import { fetchEvents } from "@/store/eventsSlice";
 
+const performanceDescriptions = {
+    Classical:
+        "Experience the grace and expressive storytelling of classical dance through elegant movement, rhythmic footwork and music rooted in tradition.",
+    "Semi-Classical":
+        "Enjoy a lively blend of classical grace and contemporary energy, brought together through expressive choreography and vibrant rhythms.",
+};
+
 export default function HomeEventsSection() {
     const dispatch = useDispatch();
     const allEvents = useSelector((state) => state.events.items);
@@ -41,11 +48,7 @@ export default function HomeEventsSection() {
             ) : events.length ? (
                 events.map((event, index) => (
                     <Reveal key={event._id} delay={0.1 + (index + 3) * 0.08} amount={0.08}>
-                        <Link
-                            to={`/events/${event._id}`}
-                            className="group flex h-full flex-col overflow-hidden rounded-[18px] border border-white/80 bg-blossom shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose"
-                            aria-label={`View ${event.styleLabel} dance performance event`}
-                        >
+                        <div className="group flex h-full flex-col overflow-hidden rounded-[18px] border border-white/80 bg-blossom shadow-[0_16px_36px_-25px_rgba(41,33,43,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_-24px_rgba(41,33,43,0.42)]">
                             <div className="group/media relative aspect-[4/3] w-full overflow-hidden bg-plum">
                                 {event.type === "video" ? (
                                     <video
@@ -66,28 +69,30 @@ export default function HomeEventsSection() {
                                     />
                                 )}
                             </div>
-                            <div className="flex flex-1 items-start justify-between gap-4 p-5 sm:p-6">
-                                <div>
-                                    <p className="eyebrow text-rose">
-                                        {event.categoryId?.name || "Featured performance"}
-                                    </p>
-                                    <h3 className="mt-2 font-display text-[1.25rem] leading-tight text-text group-hover:text-rose sm:text-[1.35rem]">
-                                        {event.styleLabel}
-                                    </h3>
-                                    {event.description && (
-                                        <p className="mt-3 line-clamp-2 text-[13px] leading-relaxed text-muted sm:text-[14px]">
-                                            {event.description}
-                                        </p>
-                                    )}
-                                </div>
-                                <span
-                                    aria-hidden="true"
-                                    className="mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-full border border-rule text-muted transition-colors group-hover:border-pink group-hover:bg-pink group-hover:text-white"
+                            <div className="flex flex-1 flex-col p-5 sm:p-6">
+                                <h3 className="font-display text-[1.25rem] leading-tight text-text sm:text-[1.35rem]">
+                                    {event.styleLabel}
+                                </h3>
+                                <p className="mt-3 flex-1 line-clamp-4 text-[13px] leading-relaxed text-muted sm:text-[14px]">
+                                    {[
+                                        event.description?.trim(),
+                                        performanceDescriptions[event.styleLabel],
+                                    ]
+                                        .filter(Boolean)
+                                        .join(" ")}
+                                </p>
+                                <Link
+                                    to={`/events/${event._id}`}
+                                    className="mt-6 inline-flex w-fit items-center gap-1.5 rounded-full bg-rose px-4 py-2.5 text-[12px] font-medium text-white transition-colors hover:bg-pink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose"
                                 >
-                                    <ArrowUpRight className="h-4 w-4" />
-                                </span>
+                                    Register Now
+                                    <ArrowUpRight
+                                        aria-hidden="true"
+                                        className="h-3.5 w-3.5"
+                                    />
+                                </Link>
                             </div>
-                        </Link>
+                        </div>
                     </Reveal>
                 ))
             ) : (
