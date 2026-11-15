@@ -11,6 +11,7 @@ const Events = lazy(() => import("@/pages/Events"));
 const EventDetail = lazy(() => import("@/pages/EventDetail"));
 const Gallery = lazy(() => import("@/pages/Gallery"));
 
+
 export default function App() {
     return (
         <BrowserRouter>
